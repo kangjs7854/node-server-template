@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 10:52:06
+ * @LastEditTime: 2020-07-30 13:55:47
  * @FilePath: \server\routes\index.js
  */
 var express = require('express');
@@ -24,27 +24,26 @@ const Cat = mongoose.model('Cat', catSchema)
 //通过调用该构造函数生成小猫,生成对应的文档(document)
 const lititleCat = new Cat({ name: 'kitty' })
 
-//小猫在调用save方法后保存到数据库
-lititleCat.save((err, lititleCat) => {
-  if (err) return console.error(err);
-  lititleCat.speak()//log ==> my name is kitty
-})
-
-//后来小猫越来越多，就可以通过模型来查找小猫
-Cat.find((err,allCats)=>{
-  if(err) return console.error(err)
-  console.log(allCats);
-})
 
 /**
  * @description: 监听路由，处理对应的逻辑
  * @param req  接收到的请求  可以获取请求的参数，req.query获取get请求的参数，req.body获取post请求的参数
  * @param res  对该请求的响应 res.json() 返回json格式的数据，res.sen()渲染对应的文本等等
- * @return: 
+ * @param next 负责将控制权交给下一个中间件，如果当前中间件的请求没有结束，且next函数没有调用，那么该请求会被挂起，后边定义的中间件都不会触发
  */
 router.get('/', function (req, res, next) {
-  // res.render('index', { title: 'Express' });
-  res.send(lititleCat.name)
+  //小猫在调用save方法后保存到数据库
+  lititleCat.save((err, lititleCat) => {
+    if (err) return console.error(err);
+    lititleCat.speak()//log ==> my name is kitty
+  })
+
+  //后来小猫越来越多，就可以通过模型来查找小猫
+  Cat.find((err, allCats) => {
+    if (err) return console.error(err)
+    res.json(allCats)
+  })
+
 });
 
 module.exports = router;

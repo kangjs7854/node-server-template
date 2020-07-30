@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 09:57:29
+ * @LastEditTime: 2020-07-30 18:45:07
  * @FilePath: \server\app.js
  */ 
 var createError = require('http-errors');
@@ -37,10 +37,15 @@ app.use(cors())
 const indexRouter = require('./routes/index');
 const getUserInfoRouter = require("./routes/getUserInfo")
 const getClinicGuideRouter = require("./routes/getClinicGuide")
+const getPatientRouter = require("./routes/getPatient")
+const getAppointmentOrderRouter = require("./routes/getAppointmentOrder")
 
-app.use('/', indexRouter);
+app.use('/api/get_cat_info', indexRouter);
 app.use("/api/get_user_info",getUserInfoRouter)
 app.use('/api/get_clinic_guide',getClinicGuideRouter)
+app.use('/api/get_patient',getPatientRouter)
+app.use('/api/get_appointment_order',getAppointmentOrderRouter)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
