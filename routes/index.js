@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 10:13:30
+ * @LastEditTime: 2020-07-30 10:52:06
  * @FilePath: \server\routes\index.js
  */
 var express = require('express');
@@ -36,8 +36,12 @@ Cat.find((err,allCats)=>{
   console.log(allCats);
 })
 
-
-/* GET home page. */
+/**
+ * @description: 监听路由，处理对应的逻辑
+ * @param req  接收到的请求  可以获取请求的参数，req.query获取get请求的参数，req.body获取post请求的参数
+ * @param res  对该请求的响应 res.json() 返回json格式的数据，res.sen()渲染对应的文本等等
+ * @return: 
+ */
 router.get('/', function (req, res, next) {
   // res.render('index', { title: 'Express' });
   res.send(lititleCat.name)
