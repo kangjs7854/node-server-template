@@ -1,14 +1,14 @@
 /*
  * @Date: 2020-07-29 14:34:55
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 11:14:49
+ * @LastEditTime: 2020-07-31 16:11:22
  * @FilePath: \server\routes\userInfo.js
  */
 const express = require('express');
 const axios = require("axios")
 const router = express.Router();
 
-const { User } = require("../model/index")
+const { userInfoModel } = require("../model/index")
 
 //小程序登录凭证校验
 router.post('/wx', function (req, res, next) {
@@ -33,36 +33,24 @@ router.post('/wx', function (req, res, next) {
 
 
 router.get("/user_info", (req, res) => {
-    const { user_id } = req.query
-    if (!user_id) {
-        User.find((err, allUser) => {
-            res.json(allUser)
-        })
-        return
-    }
-    User.findOne({ _id: user_id })
-        .exec((err, user) => {
-            if (err) return console.log(err)
-            res.json(user)
-        })
+    const { id } = req.query
+    id ? userInfoModel.findById(id).exec((err, userInfo) => res.json(userInfo))
+        : userInfoModel.find().exec((err, userInfos) => res.json(userInfos))
 })
 
-
 router.post("/user_info", (req, res) => {
-    const newUser = new User(req.body)
-    newUser.save((err, saved) => {
-        res.json(saved)
-    })
+    const newUser = new userInfoModel(req.body)
+    newUser.save((err, saved) => res.json(saved))
 })
 
 router.delete('/user_info', ((req, res) => {
-    const { user_id } = req.body
-    User.findByIdAndRemove({ _id: user_id })
-        .exec(err => {
-            User.find((err, restUser) => {
-                res.json(restUser)
-            })
-        })
+    const { id } = req.body
+    userInfoModel.findByIdAndRemove(id,(err, removed) => res.json(removed))
+}))
+
+router.put('/user_info', ((req, res, next) => {
+    const { id } = req.body
+    userInfoModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => res.json(updated))
 }))
 
 module.exports = router;

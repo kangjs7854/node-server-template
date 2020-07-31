@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 15:29:36
+ * @LastEditTime: 2020-07-31 16:01:23
  * @FilePath: \server\README.md
 --> 
 
@@ -12,6 +12,7 @@
 ## 1. 安装依赖
 
 ``` 
+
 npm i 
 
 ```
@@ -296,8 +297,7 @@ module.exports = router;
 
 ```
 5. 批量引入路由到入口文件（app.js）
-> 当api文件越来越多，每次都要繁琐的引入app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  
-> require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
+> 当api文件越来越多，每次都要繁琐的引入到app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
 ```
 //记得引入fs模块
 const fs = require('fs')
@@ -311,3 +311,25 @@ allRoutes.forEach(el => {
 
 
 ```
+
+6. 定义数据结构的模式和模型
+> 以第4步的test.js为例子 
+```
+const mongoose = require("mongoose")
+
+//定义模式的属性和行为
+const testSchema = mongoose.Schema({
+    name: String
+})
+
+//通过模式生成模型
+const testModel = mongoose.model("testModel", testSchema)
+
+module.exports = {
+    testModel //此处导出的testModel名称应与第四步导入的名称一致
+}
+
+```
+
+7. postman测试api
+> 下载postman，完成api增删改查的测试~

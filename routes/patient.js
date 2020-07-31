@@ -1,19 +1,27 @@
 /*
  * @Date: 2020-07-30 15:54:19
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 10:03:19
- * @FilePath: \server\routes\getPatient.js
+ * @LastEditTime: 2020-07-31 15:53:17
+ * @FilePath: \server\routes\patient.js
  */
 const express = require('express');
 const axios = require('axios')
 const mongoose = require('mongoose')
 const router = express.Router();
-const { User, Patient } = require('../model/index')
 
-router.get('/', ((req, res, next) => {
-    Patient.find((err, allPatient) => {
-        res.json(allPatient)
-    })
+const { patientModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+
+//查找
+router.get('/patient',((req,res,next) => {
+   const { id } = req.query
+   id ? patientModel.findById(id).exec((err,patient)=>res.json(patient))
+   :patientModel.find().exec((err,patients)=>res.json(patients))
+}))
+
+//增加
+router.post('/patient',((req,res,next) => {
+   const patient = new patientModel(req.body)
+   patient.save((err,saved)=>res.json(saved))
 }))
 
 router.post('/', ((req, res, next) => {
@@ -39,11 +47,16 @@ router.post('/', ((req, res, next) => {
     )
 }))
 
+//删除
+router.delete('/patient',((req,res,next) => {
+   const {id} = req.body
+   patientModel.findByIdAndRemove(id,(err,removed)=>res.json(removed))
+}))
 
-
-router.delete('/',(req,res)=>{
-    const { patient_id } = req.query
-
-})
+//修改
+router.put('/patient',((req,res,next) => {
+   const {id} = req.body
+   patientModel.findByIdAndUpdate(id,{...req.body},{new:true},(err,updated)=>res.json(updated))
+}))
 
 module.exports = router;

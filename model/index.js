@@ -1,11 +1,10 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 14:11:56
+ * @LastEditTime: 2020-07-31 18:46:30
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
-
 //定义模式的属性和行为
 
 const appointmentStepSchema = mongoose.Schema({
@@ -29,7 +28,7 @@ const patientSchema = mongoose.Schema({
     appoinent_order: [appointmentOrderSchema]
 })
 
-const userSchema = mongoose.Schema({
+const userInfoSchema = mongoose.Schema({
     name: String,
     patient_list: [patientSchema]
 })
@@ -39,25 +38,19 @@ const testSchema = mongoose.Schema({
 })
 
 
-
-
-
-
-
-
 //通过模式生成模型
-const User = mongoose.model("User", userSchema)
-const Patient = mongoose.model("Patient", patientSchema)
-const AppointmentOrder = mongoose.model('AppointmentOrder', appointmentOrderSchema)
-const AppointmentStep = mongoose.model("AppointmentStep", appointmentStepSchema)
-const testModel = mongoose.model("testModel", testSchema)
+const userInfoModel = mongoose.model("User", userInfoSchema)
+const patientModel = mongoose.model("Patient", patientSchema)
+const appointmentOrderModel = mongoose.model('AppointmentOrder', appointmentOrderSchema)
+const appointmentStepModel = mongoose.model("AppointmentStep", appointmentStepSchema)
+const testModel = mongoose.model("Test", testSchema)
 
 
 
 module.exports = {
-    User,
-    Patient,
-    AppointmentOrder,
-    AppointmentStep,
+    userInfoModel,
+    patientModel,
+    appointmentOrderModel,
+    appointmentStepModel,
     testModel
 }
