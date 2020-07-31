@@ -1,9 +1,9 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 13:33:42
+ * @LastEditTime: 2020-07-31 15:22:22
  * @FilePath: \server\app.js
- */ 
+ */
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -11,14 +11,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require("cors")
 const mongoose = require("mongoose")
+const fs = require('fs')
 
 var app = express();
 
 
 mongoose.connect('mongodb://localhost/test');
 const db = mongoose.connection
-db.on('error',console.error.bind(console, 'connection error:'))
-db.once("open",()=>{
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once("open", () => {
   console.log('mongodb connect success~');
 })
 
@@ -33,31 +34,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
 
-
-const indexRouter = require('./routes/index');
-const getUserInfoRouter = require("./routes/userInfo")
-const getClinicGuideRouter = require("./routes/clinicGuide")
-const getPatientRouter = require("./routes/patient")
-const getAppointmentOrderRouter = require("./routes/appointmentOrder")
-const testRouter = require("./routes/test")
-
-app.use('/api', indexRouter);
-app.use("/api",getUserInfoRouter)
-app.use('/api',getClinicGuideRouter)
-app.use('/api',getPatientRouter)
-app.use('/api',getAppointmentOrderRouter)
-app.use('/api',testRouter)
-
-
-
+//批量动态引入路由
+const allRoutes = fs.readdirSync("./routes");
+allRoutes.forEach(el => {
+  var el = require("./routes/" + el)
+  app.use('/api', el)
+})
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

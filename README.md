@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 14:20:21
+ * @LastEditTime: 2020-07-31 15:29:36
  * @FilePath: \server\README.md
 --> 
 
@@ -295,4 +295,19 @@ router.put('/test', ((req, res, next) => {
 module.exports = router;
 
 ```
+5. 批量引入路由到入口文件（app.js）
+> 当api文件越来越多，每次都要繁琐的引入app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  
+> require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
+```
+//记得引入fs模块
+const fs = require('fs')
 
+//批量动态引入路由
+const allRoutes = fs.readdirSync("./routes");//读取routes文件夹下的所有文件名
+allRoutes.forEach(el => {
+  var el = require("./routes/" + el)
+  app.use('/api', el)
+})
+
+
+```

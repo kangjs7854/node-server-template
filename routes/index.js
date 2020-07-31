@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 11:05:32
+ * @LastEditTime: 2020-07-31 15:20:55
  * @FilePath: \server\routes\index.js
  */
 var express = require('express');
@@ -21,8 +21,6 @@ catSchema.methods.speak = function () {
 //通过猫的模式定义模型，这个模型就是构造文档(document)的类
 const Cat = mongoose.model('Cat', catSchema)
 
-//通过调用该构造函数生成小猫,生成对应的文档(document)
-const lititleCat = new Cat({ name: 'kitty' })
 
 
 /**
@@ -32,19 +30,28 @@ const lititleCat = new Cat({ name: 'kitty' })
  * @param next 负责将控制权交给下一个中间件，如果当前中间件的请求没有结束，且next函数没有调用，那么该请求会被挂起，后边定义的中间件都不会触发
  */
 router.get('/cat', function (req, res, next) {
-  //小猫在调用save方法后保存到数据库
-  lititleCat.save((err, lititleCat) => {
-    if (err) return console.error(err);
-    lititleCat.speak()//log ==> my name is kitty
-  })
-
   //后来小猫越来越多，就可以通过模型来查找小猫
   Cat.find((err, allCats) => {
     if (err) return console.error(err)
     res.json(allCats)
   })
-
-
 });
+
+router.post('/cat', ((req, res, next) => {
+  //通过调用该构造函数生成小猫,生成对应的文档(document)
+  const lititleCat = new Cat(Object.assign({ name: 'kitty' },req.body))
+  //小猫在调用save方法后保存到数据库
+  lititleCat.save((err, saved) => res.json(saved))
+}))
+
+router.delete('/cat', ((req, res, next) => {
+  const { id } = req.body
+  Cat.findByIdAndRemove(id, (err, removed) => res.json(removed))
+}))
+
+router.put('/cat', ((req, res, next) => {
+  const { id } = req.body
+  Cat.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => res.json(updated))
+}))
 
 module.exports = router;
