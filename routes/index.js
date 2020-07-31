@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 13:55:47
+ * @LastEditTime: 2020-07-31 11:05:32
  * @FilePath: \server\routes\index.js
  */
 var express = require('express');
@@ -31,7 +31,7 @@ const lititleCat = new Cat({ name: 'kitty' })
  * @param res  对该请求的响应 res.json() 返回json格式的数据，res.sen()渲染对应的文本等等
  * @param next 负责将控制权交给下一个中间件，如果当前中间件的请求没有结束，且next函数没有调用，那么该请求会被挂起，后边定义的中间件都不会触发
  */
-router.get('/', function (req, res, next) {
+router.get('/cat', function (req, res, next) {
   //小猫在调用save方法后保存到数据库
   lititleCat.save((err, lititleCat) => {
     if (err) return console.error(err);
@@ -43,6 +43,7 @@ router.get('/', function (req, res, next) {
     if (err) return console.error(err)
     res.json(allCats)
   })
+
 
 });
 

@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 17:56:31
+ * @LastEditTime: 2020-07-31 14:11:56
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -34,6 +34,12 @@ const userSchema = mongoose.Schema({
     patient_list: [patientSchema]
 })
 
+const testSchema = mongoose.Schema({
+    name: String
+})
+
+
+
 
 
 
@@ -44,10 +50,14 @@ const User = mongoose.model("User", userSchema)
 const Patient = mongoose.model("Patient", patientSchema)
 const AppointmentOrder = mongoose.model('AppointmentOrder', appointmentOrderSchema)
 const AppointmentStep = mongoose.model("AppointmentStep", appointmentStepSchema)
+const testModel = mongoose.model("testModel", testSchema)
+
+
 
 module.exports = {
     User,
     Patient,
     AppointmentOrder,
-    AppointmentStep
+    AppointmentStep,
+    testModel
 }

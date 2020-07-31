@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 10:59:37
+ * @LastEditTime: 2020-07-31 14:20:21
  * @FilePath: \server\README.md
 --> 
 
@@ -197,3 +197,102 @@ npm i cors -S
 app.use(cors())
 
 ```
+
+## 6. 快速生成代码片段
+> 每次写一个curd的api需要敲很多重复代码，所以利用vscode自动生成代码段
+1. 键盘F1打开顶部搜索栏，输入以下命令行
+```
+configure user snippets
+
+```
+2. 点击选择后，输入并点击
+```
+javascript.json
+
+```
+3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
+```
+{
+	// 通过输入node，即可快捷生成node增删改查的代码段,
+  // ${TM_FILENAME_BASE} 为获取当前文件名
+	// Example:
+	"Print to console": {
+		"prefix": "node",
+		"body": [
+			"const express = require('express');",
+			"const axios = require('axios')",
+			"const mongoose = require('mongoose')",
+			"const router = express.Router();",
+			"",
+			"const { ${TM_FILENAME_BASE}Model } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来",
+			"",
+			"//查找",
+			"router.get('/${TM_FILENAME_BASE}',((req,res,next) => {",
+			"   const { id } = req.query",
+			"   id ? ${TM_FILENAME_BASE}Model.findById(id).exec((err,${TM_FILENAME_BASE})=>res.json(${TM_FILENAME_BASE}))",
+			"   :${TM_FILENAME_BASE}Model.find().exec((err,${TM_FILENAME_BASE}s)=>res.json(${TM_FILENAME_BASE}s))",
+			"}))",
+			"",
+			"//增加",
+			"router.post('/${TM_FILENAME_BASE}',((req,res,next) => {",
+			"   const ${TM_FILENAME_BASE} = new ${TM_FILENAME_BASE}Model(req.body)",
+			"   ${TM_FILENAME_BASE}.save((err,saved)=>res.json(saved))",
+			"}))",
+			"",
+			"//删除",
+			"router.delete('/${TM_FILENAME_BASE}',((req,res,next) => {",
+			"   const {id} = req.body",
+			"   ${TM_FILENAME_BASE}Model.findByIdAndRemove(id,(err,removed)=>res.json(removed))",
+			"}))",
+			"",
+			"//修改",
+			"router.put('/${TM_FILENAME_BASE}',((req,res,next) => {",
+			"   const {id} = req.body",
+			"   ${TM_FILENAME_BASE}Model.findByIdAndUpdate(id,{ ...req.body },{ new:true },(err,updated)=>res.json(updated))",
+			"}))",
+			"",
+			"module.exports = router;"
+		],
+		"description": "Log output to console"
+	}
+}
+```
+4. 快速尝试
+>在router文件夹下新建一个test.js，输入node,回车应该就会出现这一大段代码
+```
+const express = require('express');
+const axios = require('axios')
+const mongoose = require('mongoose')
+const router = express.Router();
+
+const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+
+//查找
+router.get('/test', ((req, res, next) => {
+    const { id } = req.query
+    id ? testModel.findById(id).exec((err, test) => res.json(test))
+        : testModel.find().exec((err, tests) => res.json(tests))
+}))
+
+//增加
+router.post('/test', ((req, res, next) => {
+    const test = new testModel(req.body)
+    test.save((err, saved) => res.json(saved))
+}))
+
+//删除
+router.delete('/test', ((req, res, next) => {
+    const { id } = req.body
+    testModel.findByIdAndRemove(id,(err, removed) => res.json(removed))
+}))
+
+//修改
+router.put('/test', ((req, res, next) => {
+    const { id } = req.body
+    testModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => res.json(updated))
+}))
+
+module.exports = router;
+
+```
+

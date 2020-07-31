@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 15:54:19
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 18:49:23
+ * @LastEditTime: 2020-07-31 10:03:19
  * @FilePath: \server\routes\getPatient.js
  */
 const express = require('express');
@@ -17,14 +17,14 @@ router.get('/', ((req, res, next) => {
 }))
 
 router.post('/', ((req, res, next) => {
-    let { user_id, patient_name, patient_card_id, sex } = req.body
+    const { user_id, patient_name, patient_card_id, sex } = req.body
     patientInfo = {
         patient_name,
         patient_card_id,
         sex
     }
     const newPatient = new Patient(patientInfo)
-    // newPatient.save()
+    newPatient.save()
     User.findOneAndUpdate(
         { _id: user_id },
         {
@@ -39,14 +39,11 @@ router.post('/', ((req, res, next) => {
     )
 }))
 
-router.delete('/', ((req, res) => {
-    const { user_id } = req.body
-    User.findByIdAndRemove({ _id: user_id }).exec(err=>{
-        User.find((err,restUser)=>{
-            res.json(restUser)
-        })
-    })
 
-}))
+
+router.delete('/',(req,res)=>{
+    const { patient_id } = req.query
+
+})
 
 module.exports = router;

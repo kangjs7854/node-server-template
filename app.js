@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-30 18:45:07
+ * @LastEditTime: 2020-07-31 13:33:42
  * @FilePath: \server\app.js
  */ 
 var createError = require('http-errors');
@@ -35,16 +35,20 @@ app.use(cors())
 
 
 const indexRouter = require('./routes/index');
-const getUserInfoRouter = require("./routes/getUserInfo")
-const getClinicGuideRouter = require("./routes/getClinicGuide")
-const getPatientRouter = require("./routes/getPatient")
-const getAppointmentOrderRouter = require("./routes/getAppointmentOrder")
+const getUserInfoRouter = require("./routes/userInfo")
+const getClinicGuideRouter = require("./routes/clinicGuide")
+const getPatientRouter = require("./routes/patient")
+const getAppointmentOrderRouter = require("./routes/appointmentOrder")
+const testRouter = require("./routes/test")
 
-app.use('/api/get_cat_info', indexRouter);
-app.use("/api/get_user_info",getUserInfoRouter)
-app.use('/api/get_clinic_guide',getClinicGuideRouter)
-app.use('/api/get_patient',getPatientRouter)
-app.use('/api/get_appointment_order',getAppointmentOrderRouter)
+app.use('/api', indexRouter);
+app.use("/api",getUserInfoRouter)
+app.use('/api',getClinicGuideRouter)
+app.use('/api',getPatientRouter)
+app.use('/api',getAppointmentOrderRouter)
+app.use('/api',testRouter)
+
+
 
 
 // catch 404 and forward to error handler
