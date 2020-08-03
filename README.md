@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 16:01:23
+ * @LastEditTime: 2020-08-03 18:45:39
  * @FilePath: \server\README.md
 --> 
 
@@ -333,3 +333,58 @@ module.exports = {
 
 7. postman测试api
 > 下载postman，完成api增删改查的测试~
+
+
+## 7. 数据库进阶
+>对同一个数据表或者文档进行操作是很容易上手的，但是实际业务中有着很多复杂的场景，数据结构较为负责，就需要使用到联表的操作
+
+假设有这么两个模型
+
+```js
+const mongoose = require('mongoose')
+
+const orderSchema = mongoose.Schema({
+    orderType: String,
+    buyer: {
+        type: mongoose.Schema.Types.ObjectId,//联表查询必须这样的格式来存储对应表的._id
+        ref: 'User'//联表关系的表名
+    }
+})
+
+const userSchema = mongoose.Schema({
+    user: String,
+    age: Number,
+})
+
+const orderModel = mongoose.model("Order",orderSchema)
+const userModel = mongoose.model("User",userSchema)
+
+const newUser = new userModel({
+	user: 'kjs',
+    age: 18,
+})
+
+/**
+ * 存储
+ * @description:将用户的id，关联到订单模型的buyer字段 
+ * @param {type} 
+ * @return {type} 
+ */
+newUser.save((err,saved)=>{
+	const newOrder = new OrderModel({
+		orderType:'奶茶',
+		buyer:res._id
+	})
+	newOrder.save()
+})
+
+/**
+ * @description: 
+ * 
+ * @param {type} populate()第一个参数表示通过什么字段去联表并用来放入查到的联表数据,
+ *  第二个参数表示只返回某个字段默认全部返回
+ * @return {type} 
+ */
+orderModel.find({name:"kjs"}).populate(('buyer'))
+
+```
