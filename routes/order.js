@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-04 18:26:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-04 18:44:17
+ * @LastEditTime: 2020-08-04 18:59:36
  * @FilePath: \server\routes\order.js
  */
 const express = require('express');
@@ -14,8 +14,8 @@ const { orderModel, userModel } = require('../model/index') //引入的模型名
 //查找
 router.get('/order', ((req, res, next) => {
     const { id } = req.query
-    orderModel.findId(id).populate('buyer').exec((err,allOrder)=>res.json(allOrder))
-    // userModel.find({username}).populate('buyer').exec((err, orders) => res.json(orders))
+    id ? orderModel.findById(id).populate('buyer').exec((err,allOrder)=>res.json(allOrder))
+    :orderModel.find().populate('buyer').exec((err,allOrder)=>res.json(allOrder))
 }))
 
 //增加

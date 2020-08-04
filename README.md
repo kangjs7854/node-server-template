@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-04 18:41:52
+ * @LastEditTime: 2020-08-04 18:59:13
  * @FilePath: \server\README.md
 --> 
 
@@ -344,10 +344,11 @@ module.exports = {
 const mongoose = require('mongoose')
 
 const orderSchema = mongoose.Schema({
+	orderType:String
     price: Number,
     buyer: {
         type: mongoose.Schema.Types.ObjectId,//联表查询必须这样的格式来存储对应表的._id
-        ref: 'userModel'//联表关系的表名
+        ref: 'User'//联表关系的表名，注意是生成模型的类，与模型区分开
     }
 })
 
@@ -370,7 +371,8 @@ const newUser = new userModel({
  */
 newUser.save((err,saved)=>{
 	const newOrder = new OrderModel({
-		price:666,
+		orderType:"奶茶"
+		price:10,
 		buyer:res._id
 	})
 	newOrder.save()
@@ -383,6 +385,6 @@ newUser.save((err,saved)=>{
  *  第二个参数表示只返回某个字段默认全部返回
  * @return {type} 
  */
-userModel.find({username:"kjs"}).populate(('buyer'))
+orderModel.find({orderType:"奶茶"}).populate(('buyer'))
 
 ```

@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-04 18:25:57
+ * @LastEditTime: 2020-08-04 18:56:09
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -56,7 +56,7 @@ const orderSchema = mongoose.Schema({
     price:Number,
     buyer:{
         type:ObjectId,
-        ref:"userModel"
+        ref:"UserTest"//注意这里的ref指向生成模型的类
     }
 })
 
