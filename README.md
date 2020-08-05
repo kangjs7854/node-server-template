@@ -129,7 +129,7 @@ Cat.find((err,allCats)=>{
 
 ## 4. api的生成
 
-> express的路由可以将前端发送的响应网络请求，映射到对应的中间件去处理，当前端访问了index.js这个文件的路由localhost:3000/api/get_cat_info时就会触发该文件中的路由监听，即可处理对应的逻辑，进行数据库的操作等等，这里以index.js为例子
+> express的路由可以将前端发送的响应网络请求，映射到对应的中间件去处理，当前端访问了index.js这个文件的路由localhost:3000/api/cat时就会触发该文件中的路由监听，即可处理对应的逻辑，进行数据库的操作等等，这里以index.js为例子
 
 1. 定义index.js路由，处理逻辑
 
@@ -146,11 +146,11 @@ const mongoose = require("mongoose")
 /**
  * @description: 监听路由，处理对应的逻辑
  * @param req {Object} 接收到的请求  可以获取请求的参数，req.query获取get请求的参数，req.body获取post请求的参数
- * @param res {Object} 对该请求的响应 res.json() 返回json格式的数据，res.sen()渲染对应的文本等等
+ * @param res {Object} 对该请求的响应 res.json() 返回json格式的数据，res.send()渲染对应的文本等等
  * @param next {function} 负责将控制权交给下一个中间件，如果当前中间件的请求没有结束，且next函数没有调用，那么该请求会被挂起，后边定义的中间件都不会触发
  */
 
-router.get('/', function (req, res, next) {
+router.get('/cat', function (req, res, next) {
     //生成json格式的数据返回给前端
     res.json({
         code:0,
@@ -181,7 +181,7 @@ module.exports = router;
 const indexRouter = require('./routes/index');
 
 //api 路由的调用，定义其api路径名称
-app.use('/api/get_cat_info', indexRouter);
+app.use('/api', indexRouter);
 
 ```
 ## 5. 跨域
@@ -336,7 +336,7 @@ module.exports = {
 
 
 ## 7. 数据库进阶
->对同一个数据表或者文档进行操作是很容易上手的，但是实际业务中有着很多复杂的场景，数据结构较为负责，就需要使用到联表的操作
+>对同一个数据表或者文档进行操作是很容易上手的，但是实际业务中有着很多复杂的场景，数据结构较为复杂，就需要使用到联表的操作
 
 假设有这么两个模型
 
@@ -364,8 +364,8 @@ const newUser = new userModel({
 })
 
 /**
- * 存储
- * @description:将用户的id，关联到订单模型的buyer字段 
+ * 
+ * @description:存储。将用户的id，关联到订单模型的buyer字段 
  * @param {type} 
  * @return {type} 
  */
@@ -379,8 +379,7 @@ newUser.save((err,saved)=>{
 })
 
 /**
- * @description: 
- * 
+ * @description: 查询
  * @param {type} populate()第一个参数表示通过什么字段去联表并用来放入查到的联表数据,
  *  第二个参数表示只返回某个字段默认全部返回
  * @return {type} 
