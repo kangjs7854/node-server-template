@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-29 14:34:55
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 16:11:22
+ * @LastEditTime: 2020-08-06 19:01:39
  * @FilePath: \server\routes\userInfo.js
  */
 const express = require('express');
@@ -24,10 +24,18 @@ router.post('/wx', function (req, res, next) {
             grant_type: "authorization_code"
         }
     }).then(res2 => {
-        // Object.assign(res2.data,{
-        //     token:''
-        // })
-        res.json(res2.data)
+        Object.assign(res2.data, {
+            timestamp: new Date().getTime(),
+            extendData: {
+                data: '扩展字段'
+            },
+        })
+        const obj = {
+            returnCode: 200,
+            returnMsg: "成功",
+            data: res2.data,
+        }
+        res.json(obj)
     })
 });
 
@@ -39,13 +47,33 @@ router.get("/user_info", (req, res) => {
 })
 
 router.post("/user_info", (req, res) => {
+    const { id } = req.body 
+    if(id){
+        userInfoModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => {
+            Object.assign(updated, {
+                loginToken:'jian91kang160',
+                timestamp: new Date().getTime(),
+                extendData: {
+                    data: '扩展字段'
+                },
+            })
+            const obj = {
+                returnCode: 200,
+                returnMsg: "成功",
+                data: updated,
+            }
+
+            res.json(obj)
+        })
+        return
+    }
     const newUser = new userInfoModel(req.body)
     newUser.save((err, saved) => res.json(saved))
 })
 
 router.delete('/user_info', ((req, res) => {
     const { id } = req.body
-    userInfoModel.findByIdAndRemove(id,(err, removed) => res.json(removed))
+    userInfoModel.findByIdAndRemove(id, (err, removed) => res.json(removed))
 }))
 
 router.put('/user_info', ((req, res, next) => {
