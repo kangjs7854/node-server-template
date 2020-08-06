@@ -1,15 +1,13 @@
 /*
  * @Date: 2020-07-29 17:58:01
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 14:13:58
+ * @LastEditTime: 2020-08-06 11:00:37
  * @FilePath: \server\routes\userPhone.js
  */
 //小程序手机号授权获得加密字段后解密
 
 const WXBizDataCrypt = require('../public/javascripts/WXBizDataCrypt')
-const appId = 'wx4f4bc4dec97d474b'
-const sessionKey = 'tiihtNczf5v6AKRyjwEUhQ=='
-const pc = new WXBizDataCrypt(appId, sessionKey)
+
 
 const express = require('express');
 const axios = require('axios')
@@ -27,10 +25,14 @@ router.get('/userPhone', ((req, res, next) => {
 
 //增加
 router.post('/userPhone', ((req, res, next) => {
-    const { encryptedData, iv } = req.body
-    const data = pc.decryptData(encryptedData, iv)
-    const userPhone = new userPhoneModel(data)
-    userPhone.save((err, saved) => res.json(saved))
+    const { encryptedData, iv ,sessionKey} = req.body
+    const appId = req.headers.referer.match(reg)[0]
+    if(appId && sessionKey){
+        const pc = new WXBizDataCrypt(appId, sessionKey)
+        const data = pc.decryptData(encryptedData, iv)
+        const userPhone = new userPhoneModel(data)
+        userPhone.save((err, saved) => res.json(saved))
+    }
 }))
 
 //删除

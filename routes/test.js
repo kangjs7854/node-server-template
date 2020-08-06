@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-31 11:52:40
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 14:04:17
+ * @LastEditTime: 2020-08-05 14:52:57
  * @FilePath: \server\routes\test.js
  */
 const express = require('express');
@@ -20,8 +20,16 @@ router.get('/test', ((req, res, next) => {
 
 //增加
 router.post('/test', ((req, res, next) => {
-    const test = new testModel(req.body)
-    test.save((err, saved) => res.json(saved))
+    const { id ,name} = req.body
+    if(name){
+        const test = new testModel(req.body)
+        test.save((err, saved) => res.json(saved))
+        return
+    }
+    id ? testModel.findById(id).exec((err, test) => res.json(test))
+        : testModel.find().exec((err, tests) => res.json(tests))
+   
+   
 }))
 
 //删除
