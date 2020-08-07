@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-06 19:02:55
+ * @LastEditTime: 2020-08-07 11:32:58
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -23,7 +23,7 @@ const appointmentOrderSchema = mongoose.Schema({
     currentStep: Number,
     appointmentStep: {
         type: ObjectId,
-        ref: "appointmentStepModel"
+        ref: "AppointmentStep"
     }
 })
 
@@ -33,22 +33,40 @@ const patientSchema = mongoose.Schema({
     sex: String,
     appoinent_order: {
         type: ObjectId,
-        ref: "appointmentOrderModel"
+        ref: "AppointmentOrder"
     }
 })
 
 const userInfoSchema = mongoose.Schema({
     name: String,
-    accountInfo:String,
-    timestamp:Number,
-    loginToken:String,
+    accountInfo: String,
+    timestamp: Number,
+    loginToken: String,
     patient_list: {
         type: ObjectId,
-        ref: "patientModel"
+        ref: "Patient"
     },
-    extendData:{
-        data:String
+    extendData: {
+        data: String
     }
+})
+
+const memberInfoSchema = mongoose.Schema({
+    isDefault: Boolean,
+    memberName: String,
+    memberSex: String,
+    cardInfo: {
+        type: ObjectId,
+        ref: "Card"
+    },
+    limitMember:Number
+
+})
+
+const cardSchema = mongoose.Schema({
+    cardNo: String,
+    cardType: String,
+    cardName: String
 })
 
 const testSchema = mongoose.Schema({
@@ -73,7 +91,6 @@ const orderSchema = mongoose.Schema({
         ref: "UserTest"//注意这里的ref指向生成模型的类
     }
 })
-
 const userSchema = mongoose.Schema({
     username: String
 })
@@ -91,7 +108,8 @@ const appointmentStepModel = mongoose.model("AppointmentStep", appointmentStepSc
 const testModel = mongoose.model("Test", testSchema)
 
 const hosModel = mongoose.model("Hos", hosSchema)
-
+const memberInfoModel = mongoose.model("MemberInfo", memberInfoSchema)
+const cardModel = mongoose.model("Card", cardSchema)
 
 module.exports = {
     userInfoModel,
@@ -103,5 +121,7 @@ module.exports = {
     orderModel,
     userModel,
 
-    hosModel
+    hosModel,
+    memberInfoModel,
+    cardModel
 }

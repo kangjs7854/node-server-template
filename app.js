@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-07-31 15:22:22
+ * @LastEditTime: 2020-08-07 17:44:28
  * @FilePath: \server\app.js
  */
 var createError = require('http-errors');
@@ -16,7 +16,10 @@ const fs = require('fs')
 var app = express();
 
 
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/test', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once("open", () => {
