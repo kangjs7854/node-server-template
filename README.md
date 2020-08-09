@@ -66,6 +66,17 @@ net start mongodb
 //显示启动成功即可通过 http://localhost:27017/ 访问
 ```
 
+4. 服务名无效的解决方法
+- 将data目录删除
+- 管理员模式打开cmd，进入mongodb的bin目录
+- 再次安装服务
+```
+mongod --config "//此处为第一步配置的mongo.conf文件的路径 + mongo.conf"  --install --serviceName "mongodb"
+```
+- 再次启动服务 
+```
+net start mongodb 
+```
 #### * 启动服务之后需要安装mongoose模块来方便操作数据库
 
 1. 安装依赖
