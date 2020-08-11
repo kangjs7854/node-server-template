@@ -11,26 +11,26 @@
 
 ```
 |-- server
-    |-- .gitignore 					git的忽略文件
-    |-- app.js 						入口文件
-    |-- package.json 				依赖
-    |-- README.md 					项目说明文件
-    |-- bin							配置
+    |-- .gitignore 			git的忽略文件
+    |-- app.js 				入口文件
+    |-- package.json 			依赖
+    |-- README.md 			项目说明文件
+    |-- bin				配置
     |   |-- www
     |-- client
     |   |-- index.html 
-    |-- controllers 				行为层
+    |-- controllers 			行为层
     |   |-- index.js 
-    |-- model 						模型层
+    |-- model 				模型层
     |   |-- index.js
-    |-- public 						公共资源文件
+    |-- public 				公共资源文件
     |   |-- images
     |   |   |-- a1_bg_wu@2x.png
     |   |-- javascripts
     |   |   |-- WXBizDataCrypt.js 
     |   |-- stylesheets
     |       |-- style.css
-    |-- routes 						api路由分发
+    |-- routes 				api路由分发
     |   |-- appointmentOrder.js
     |   |-- card.js
     |   |-- clinicGuide.js
@@ -43,7 +43,7 @@
     |   |-- test.js
     |   |-- userInfo.js
     |   |-- userPhone.js
-    |-- views 						视图层（这里未使用模板引擎，所以未使用）
+    |-- views 				视图层（这里未使用模板引擎，所以未使用）
         |-- error.jade
         |-- index.jade
         |-- layout.jade
@@ -152,7 +152,7 @@ db.once("open", () => {
 
 > 这里用router文件夹中的index.js作为例子，通过如何创建一只小猫作为操作演示，简单理解mongoose的概念和使用
 
-``` js
+```js
 const mongoose = require("mongoose")
 
 //定义猫的模式，声明猫的属性和行为，也就是设置其对应的数据结构，
