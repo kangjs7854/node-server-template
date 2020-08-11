@@ -227,10 +227,10 @@ javascript.json
 
 ```
 - 3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
+
+通过输入node，即可快捷生成node增删改查的代码段,${TM_FILENAME_BASE} 为获取当前文件名
 ```json
 {
-	// 通过输入node，即可快捷生成node增删改查的代码段,
-  // ${TM_FILENAME_BASE} 为获取当前文件名
 	// Example:
 	"Print to console": {
 		"prefix": "node",
