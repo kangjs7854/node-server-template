@@ -1,13 +1,57 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 15:09:24
+ * @LastEditTime: 2020-08-11 15:44:15
  * @FilePath: \server\README.md
 --> 
 
 # node-server-template
 
 > node开发接口的项目模板，主要是用来开发一些api,在前端开发时方便mock数据，接口联调时更有效率地交付产品
+
+```
+|-- server
+    |-- .gitignore 					git的忽略文件
+    |-- app.js 						入口文件
+    |-- package.json 				依赖
+    |-- README.md 					项目说明文件
+    |-- bin							配置
+    |   |-- www
+    |-- client
+    |   |-- index.html 
+    |-- controllers 				行为层
+    |   |-- index.js 
+    |-- model 						模型层
+    |   |-- index.js
+    |-- public 						公共资源文件
+    |   |-- images
+    |   |   |-- a1_bg_wu@2x.png
+    |   |-- javascripts
+    |   |   |-- WXBizDataCrypt.js 
+    |   |-- stylesheets
+    |       |-- style.css
+    |-- routes 						api路由分发
+    |   |-- appointmentOrder.js
+    |   |-- card.js
+    |   |-- clinicGuide.js
+    |   |-- hos.js
+    |   |-- index.js
+    |   |-- memberInfo.js
+    |   |-- order.js
+    |   |-- orderList.js
+    |   |-- patient.js
+    |   |-- test.js
+    |   |-- userInfo.js
+    |   |-- userPhone.js
+    |-- views 						视图层（这里未使用模板引擎，所以未使用）
+        |-- error.jade
+        |-- index.jade
+        |-- layout.jade
+
+
+
+```
+
 
 ## 1. 安装依赖
 
