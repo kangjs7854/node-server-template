@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 14:31:31
+ * @LastEditTime: 2020-08-11 19:33:00
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -62,7 +62,14 @@ const memberInfoSchema = Schema({
         type: ObjectId,
         ref: "Card"
     },
-    limitMember:Number
+    limitMember: Number,
+    orders: [
+        {
+            type: ObjectId,
+            ref: "OrderList"
+        }
+    ]
+
 
 })
 
@@ -74,7 +81,7 @@ const cardSchema = Schema({
 
 const testSchema = Schema({
     name: String,
-    age:Number
+    age: Number
 })
 
 const hosSchema = Schema({
@@ -88,17 +95,15 @@ const hosSchema = Schema({
 })
 
 const orderListSchema = Schema({
-    depName:String,
-    userName:{
-        type:ObjectId,
-        ref:"MemberInfo"
-    },
-    doctorName:String,
-    takeNo:Number,
-    clinicTime:String,
-    payAmt:String,
-    doctorId:Number,
-    depId:Number
+    depName: String,
+    doctorName: String,
+    takeNo: Number,
+    clinicTime: String,
+    payAmt: String,
+    doctorId: Number,
+    depId: Number,
+    userName: String
+
 })
 
 
@@ -129,7 +134,7 @@ const testModel = Model("Test", testSchema)
 const hosModel = Model("Hos", hosSchema)
 const memberInfoModel = Model("MemberInfo", memberInfoSchema)
 const cardModel = Model("Card", cardSchema)
-const orderListModel = Model("OrderList",orderListSchema)
+const orderListModel = Model("OrderList", orderListSchema)
 
 module.exports = {
     userInfoModel,

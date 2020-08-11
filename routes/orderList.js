@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-11 09:41:34
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 14:44:39
+ * @LastEditTime: 2020-08-11 19:33:07
  * @FilePath: \server\routes\orderList.js
  */
 const express = require('express');
@@ -9,8 +9,21 @@ const axios = require('axios')
 const mongoose = require('mongoose')
 const router = express.Router();
 
-const { orderListModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
-const { insertOrUpDate } = require("../controllers/index")
+const { orderListModel, memberInfoModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+const { insertOrUpDate } = require("../controllers/index");
+const e = require('express');
+
+
+const templateResult = {
+    returnCode: 200,
+    returnMsg: "成功",
+    data: {
+        timestamp: new Date().getTime(),
+        extendData: {
+            data: '扩展字段'
+        },
+    },
+}
 
 //查找
 router.get('/orderList', ((req, res, next) => {
@@ -21,18 +34,74 @@ router.get('/orderList', ((req, res, next) => {
 
 //增加
 router.post('/orderList', ((req, res, next) => {
-    const { memberId, orderId } = req.body
-    Object.assign(req.body, {
-        userName: memberId
-    })
+    const { memberId, doctorName } = req.body
 
-    insertOrUpDate(orderListModel, { _id: orderId }, req.body, ['userName', 'memberName'], 'orderList')
-        .then(data => {
-            res.json(data)
+    if (!memberId) return res.json(null)
+
+    if (!doctorName) {
+        memberInfoModel.findById(memberId)
+            .populate('orders')
+            .exec((err, all) => {
+
+                Object.assign(templateResult.data, {
+                    orderList: all.orders
+                })
+                res.json(templateResult)
+                // res.json(all)
+            })
+        return
+    }
+
+    getUserName().then(memberName => saveOrder(memberName))
+
+    function getUserName() {
+        return new Promise((resolve, reject) => {
+            memberInfoModel.findById(memberId).exec((err, memberInfo) => {
+                if (err) reject(err)
+                resolve(memberInfo.memberName)
+            })
         })
-        .catch(err => {
-            res.send(err)
-        })
+    }
+
+    function saveOrder(memberName) {
+        orderListModel.findOneAndUpdate(//同个医生名就更新数据，否则创建新数据,为了方便mock增加数据和更新
+            { doctorName },
+            { ...req.body, userName: memberName },
+            {
+                upsert: true,
+                new: true,
+                setDefaultsOnInsert: true
+            })
+            .exec((err, orderInfo) => {
+                saveMember(orderInfo)
+                // res.json(orderInfo)
+            })
+    }
+
+    function saveMember(orderInfo) {
+        memberInfoModel.findOneAndUpdate(
+            { _id: memberId },
+            { $addToSet: { 'orders': orderInfo._id } },
+            { new: true }).exec((err, data) => {
+                console.log(err);
+                res.json(data)
+            })
+    }
+
+
+
+
+
+
+
+    // insertOrUpDate(orderListModel, { _id: orderId }, req.body, ['userName', 'memberName'])
+    //     .then(data => {
+    //         Object.assign(templateResult.data, { orderList: data })
+    //         res.json(templateResult)
+    //     })
+    //     .catch(err => {
+    //         res.send(err)
+    //     })
 
 }))
 
