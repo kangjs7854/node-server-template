@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-07 17:44:28
+ * @LastEditTime: 2020-08-11 14:57:54
  * @FilePath: \server\app.js
  */
 var createError = require('http-errors');
@@ -15,7 +15,7 @@ const fs = require('fs')
 
 var app = express();
 
-
+mongoose.set('useFindAndModify', false)
 mongoose.connect('mongodb://localhost/test', {
   useNewUrlParser: true,
   useUnifiedTopology: true

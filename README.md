@@ -1,13 +1,13 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-04 18:59:13
+ * @LastEditTime: 2020-08-11 15:09:24
  * @FilePath: \server\README.md
 --> 
 
 # node-server-template
 
-> node开发接口的项目模板，主要是用来开发一些api
+> node开发接口的项目模板，主要是用来开发一些api,在前端开发时方便mock数据，接口联调时更有效率地交付产品
 
 ## 1. 安装依赖
 
@@ -34,7 +34,7 @@ npm run start
 
 1.  主要是要在目录多配置一个mongo.conf文件。如果mongodb的目录没有data文件夹，记得新建一个，为下方dbpath的路径
 
-``` 
+``` conf
 #mongo.conf文件
 
 # 新增的数据库的文件夹路径，根据自己的安装路径填写
@@ -88,14 +88,17 @@ npm i mongoose -S
 
 2. 在入口文件引入并发起连接（app.js）
 
-``` 
+``` js
 const mongoose = require("mongoose")
 //连接mongodb服务
-mongoose.connect('mongodb://localhost/test');
-//判断连接状态
+mongoose.set('useFindAndModify', false)
+mongoose.connect('mongodb://localhost/test', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 const db = mongoose.connection
-db.on('error',console.error.bind(console, 'connection error:'))
-db.once("open",()=>{
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once("open", () => {
   console.log('mongodb connect success~');
 })
 
@@ -105,7 +108,7 @@ db.once("open",()=>{
 
 > 这里用router文件夹中的index.js作为例子，通过如何创建一只小猫作为操作演示，简单理解mongoose的概念和使用
 
-``` 
+``` js
 const mongoose = require("mongoose")
 
 //定义猫的模式，声明猫的属性和行为，也就是设置其对应的数据结构，
@@ -144,7 +147,7 @@ Cat.find((err,allCats)=>{
 
 1. 定义index.js路由，处理逻辑
 
-``` 
+``` js
  */
 var express = require('express');
 var router = express.Router();
@@ -187,7 +190,7 @@ module.exports = router;
 
 2. 在入口文件注册路由（app.js）
 
-``` 
+``` js
 //引入路由
 const indexRouter = require('./routes/index');
 
@@ -205,25 +208,26 @@ npm i cors -S
 
 2. 在入口文件引入并调用（app.js）
 >注意要在定义api路由之前引入
-```
+```js
 app.use(cors())
 
 ```
 
 ## 6. 快速生成代码片段
 > 每次写一个curd的api需要敲很多重复代码，所以利用vscode自动生成代码段
-1. 键盘F1打开顶部搜索栏，输入以下命令行
+
+- 1. 键盘F1打开顶部搜索栏，输入以下命令行
 ```
 configure user snippets
 
 ```
-2. 点击选择后，输入并点击
+- 2. 点击选择后，输入并点击
 ```
 javascript.json
 
 ```
-3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
-```
+- 3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
+```json
 {
 	// 通过输入node，即可快捷生成node增删改查的代码段,
   // ${TM_FILENAME_BASE} 为获取当前文件名
@@ -237,6 +241,7 @@ javascript.json
 			"const router = express.Router();",
 			"",
 			"const { ${TM_FILENAME_BASE}Model } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来",
+			"const { insertOrUpDate } = require('../controllers/index')",
 			"",
 			"//查找",
 			"router.get('/${TM_FILENAME_BASE}',((req,res,next) => {",
@@ -247,8 +252,14 @@ javascript.json
 			"",
 			"//增加",
 			"router.post('/${TM_FILENAME_BASE}',((req,res,next) => {",
-			"   const ${TM_FILENAME_BASE} = new ${TM_FILENAME_BASE}Model(req.body)",
-			"   ${TM_FILENAME_BASE}.save((err,saved)=>res.json(saved))",
+			"   const { id } = req.body",
+			"   insertOrUpDate(${TM_FILENAME_BASE}Model, {_id: id}, req.body,[],'list')",
+			"   .then(data=>{",
+			"       res.json(data)",
+			"   })",
+			"   .catch(err=>{",
+			"       res.send(err)",
+			"   })",
 			"}))",
 			"",
 			"//删除",
@@ -260,7 +271,7 @@ javascript.json
 			"//修改",
 			"router.put('/${TM_FILENAME_BASE}',((req,res,next) => {",
 			"   const {id} = req.body",
-			"   ${TM_FILENAME_BASE}Model.findByIdAndUpdate(id,{ ...req.body },{ new:true },(err,updated)=>res.json(updated))",
+			"   ${TM_FILENAME_BASE}Model.findByIdAndUpdate(id,{...req.body},{new:true},(err,updated)=>res.json(updated))",
 			"}))",
 			"",
 			"module.exports = router;"
@@ -269,15 +280,16 @@ javascript.json
 	}
 }
 ```
-4. 快速尝试
+- 4. 快速尝试
 >在router文件夹下新建一个test.js，输入node,回车应该就会出现这一大段代码
-```
+```js
 const express = require('express');
 const axios = require('axios')
 const mongoose = require('mongoose')
 const router = express.Router();
 
 const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+const { insertOrUpDate } = require('../controllers/index')
 
 //查找
 router.get('/test', ((req, res, next) => {
@@ -288,14 +300,20 @@ router.get('/test', ((req, res, next) => {
 
 //增加
 router.post('/test', ((req, res, next) => {
-    const test = new testModel(req.body)
-    test.save((err, saved) => res.json(saved))
+    const { id } = req.body
+    insertOrUpDate(testModel, { _id: id }, req.body, [], 'list')
+        .then(data => {
+            res.json(data)
+        })
+        .catch(err => {
+            res.send(err)
+        })
 }))
 
 //删除
 router.delete('/test', ((req, res, next) => {
     const { id } = req.body
-    testModel.findByIdAndRemove(id,(err, removed) => res.json(removed))
+    testModel.findByIdAndRemove(id, (err, removed) => res.json(removed))
 }))
 
 //修改
@@ -307,9 +325,9 @@ router.put('/test', ((req, res, next) => {
 module.exports = router;
 
 ```
-5. 批量引入路由到入口文件（app.js）
+- 5. 批量引入路由到入口文件（app.js）
 > 当api文件越来越多，每次都要繁琐的引入到app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
-```
+```js
 //记得引入fs模块
 const fs = require('fs')
 
@@ -323,9 +341,9 @@ allRoutes.forEach(el => {
 
 ```
 
-6. 定义数据结构的模式和模型
+- 6. 定义数据结构的模式和模型
 > 以第4步的test.js为例子 
-```
+```js
 const mongoose = require("mongoose")
 
 //定义模式的属性和行为
@@ -341,9 +359,60 @@ module.exports = {
 }
 
 ```
+- 7. 编写controllers
+ 通过代码片段已经快速生成了增删改查的代码模板，也定义了数据结构，实际上在传统的mvc模型中，
+ 还需要controllers来更好的处理业务逻辑，这里我封装了一个插入或更新的函数
+
+ 新建controllers文件夹,以及index.js
+
+ ````js
+module.exports = {
+    /**
+     * @description
+     * 1.没传id，返回全部内容
+     * 2.传id，无文档，创建一个
+     * 2.传id，有文档，更新
+     * @param {Object} Model 需要进行数据操作的模型
+     * @param {Object} query 匹配条件，有就更新，无就新增
+     * @param {Object} payload 需要插入或者更新的内容
+     * @param {Array} populate 一个参数的时候表示返回全部，两个参数的时候返回对应的联表的属性
+     * @param {String} dataName 需要返回的主要的data的数据名称
+     * @return {Object} 返回处理完的数据
+     */
+    insertOrUpDate(Model, query = {}, payload = {}, populate = [], dataName = "list") {
+        return new Promise((resolve, reject) => {
+            const temp = JSON.stringify(query) != "{}"
+                ? Model.findOneAndUpdate(
+                    query,
+                    payload,
+                    { upsert: true, new: true, setDefaultsOnInsert: true }
+                )
+                : Model.find().populate(populate[0], populate[1])
+            temp.populate(populate[0], populate[1]).exec((err, data) => {
+                if (err) return reject(err)
+                const result = {
+                    returnCode: 200,
+                    returnMsg: "成功",
+                    data: {
+                        [dataName]: data,
+                        timestamp: new Date().getTime(),
+                        extendData: {
+                            data: '扩展字段'
+                        },
+                    },
+                }
+                resolve(result)
+            })
+        })
+    }
+}
+
+
+ ````
+
 
 7. postman测试api
-> 下载postman，完成api增删改查的测试~
+ 下载postman，完成api增删改查的测试~
 
 
 ## 7. 数据库进阶
@@ -351,7 +420,7 @@ module.exports = {
 
 假设有这么两个模型
 
-```js
+````js
 const mongoose = require('mongoose')
 
 const orderSchema = mongoose.Schema({
@@ -397,4 +466,5 @@ newUser.save((err,saved)=>{
  */
 orderModel.find({orderType:"奶茶"}).populate(('buyer'))
 
-```
+````
+

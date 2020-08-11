@@ -1,21 +1,24 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-07 11:32:58
+ * @LastEditTime: 2020-08-11 14:31:31
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
+const Schema = mongoose.Schema
+const Model = mongoose.model
+//联表时用于标志存储数据的唯一性
+const ObjectId = Schema.Types.ObjectId;
+
+
 //定义模式的属性和行为
 
-//联表时用于标志存储数据的唯一性
-const ObjectId = mongoose.Schema.Types.ObjectId;
-
-const appointmentStepSchema = mongoose.Schema({
+const appointmentStepSchema = Schema({
     type: String,
     status: Number
 })
 
-const appointmentOrderSchema = mongoose.Schema({
+const appointmentOrderSchema = Schema({
     doctor_name: String,
     appoinent_time: Date,
     appoinent_department: String,
@@ -27,7 +30,7 @@ const appointmentOrderSchema = mongoose.Schema({
     }
 })
 
-const patientSchema = mongoose.Schema({
+const patientSchema = Schema({
     patient_name: String,
     patient_card_id: Number,
     sex: String,
@@ -37,7 +40,7 @@ const patientSchema = mongoose.Schema({
     }
 })
 
-const userInfoSchema = mongoose.Schema({
+const userInfoSchema = Schema({
     name: String,
     accountInfo: String,
     timestamp: Number,
@@ -51,7 +54,7 @@ const userInfoSchema = mongoose.Schema({
     }
 })
 
-const memberInfoSchema = mongoose.Schema({
+const memberInfoSchema = Schema({
     isDefault: Boolean,
     memberName: String,
     memberSex: String,
@@ -63,17 +66,18 @@ const memberInfoSchema = mongoose.Schema({
 
 })
 
-const cardSchema = mongoose.Schema({
+const cardSchema = Schema({
     cardNo: String,
     cardType: String,
     cardName: String
 })
 
-const testSchema = mongoose.Schema({
-    name: String
+const testSchema = Schema({
+    name: String,
+    age:Number
 })
 
-const hosSchema = mongoose.Schema({
+const hosSchema = Schema({
     unitId: Number,
     unitName: String,
     unitImg: String,
@@ -83,33 +87,49 @@ const hosSchema = mongoose.Schema({
     }
 })
 
+const orderListSchema = Schema({
+    depName:String,
+    userName:{
+        type:ObjectId,
+        ref:"MemberInfo"
+    },
+    doctorName:String,
+    takeNo:Number,
+    clinicTime:String,
+    payAmt:String,
+    doctorId:Number,
+    depId:Number
+})
+
+
 //联表测试
-const orderSchema = mongoose.Schema({
+const orderSchema = Schema({
     price: Number,
     buyer: {
         type: ObjectId,
         ref: "UserTest"//注意这里的ref指向生成模型的类
     }
 })
-const userSchema = mongoose.Schema({
+const userSchema = Schema({
     username: String
 })
 
-const orderModel = mongoose.model("OrderTest", orderSchema)
-const userModel = mongoose.model("UserTest", userSchema)
+const orderModel = Model("OrderTest", orderSchema)
+const userModel = Model("UserTest", userSchema)
 
 
 
 //通过模式生成模型
-const userInfoModel = mongoose.model("User", userInfoSchema)
-const patientModel = mongoose.model("Patient", patientSchema)
-const appointmentOrderModel = mongoose.model('AppointmentOrder', appointmentOrderSchema)
-const appointmentStepModel = mongoose.model("AppointmentStep", appointmentStepSchema)
-const testModel = mongoose.model("Test", testSchema)
+const userInfoModel = Model("User", userInfoSchema)
+const patientModel = Model("Patient", patientSchema)
+const appointmentOrderModel = Model('AppointmentOrder', appointmentOrderSchema)
+const appointmentStepModel = Model("AppointmentStep", appointmentStepSchema)
+const testModel = Model("Test", testSchema)
 
-const hosModel = mongoose.model("Hos", hosSchema)
-const memberInfoModel = mongoose.model("MemberInfo", memberInfoSchema)
-const cardModel = mongoose.model("Card", cardSchema)
+const hosModel = Model("Hos", hosSchema)
+const memberInfoModel = Model("MemberInfo", memberInfoSchema)
+const cardModel = Model("Card", cardSchema)
+const orderListModel = Model("OrderList",orderListSchema)
 
 module.exports = {
     userInfoModel,
@@ -123,5 +143,6 @@ module.exports = {
 
     hosModel,
     memberInfoModel,
-    cardModel
+    cardModel,
+    orderListModel
 }

@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-07 10:24:52
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-07 14:41:24
+ * @LastEditTime: 2020-08-11 09:37:27
  * @FilePath: \server\routes\memberInfo.js
  */
 const express = require('express');
@@ -31,7 +31,7 @@ router.post('/memberInfo', ((req, res, next) => {
       const newCard = new cardModel({
          cardNo,
          cardType: "就诊卡",
-         cardName: "自费一卡通"
+         cardName: "医保电脑"
       })
       newCard.save((err, saved) => {
          if (err) console.log(err);
