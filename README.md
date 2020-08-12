@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-12 11:01:39
+ * @LastEditTime: 2020-08-12 17:17:57
  * @FilePath: \server\README.md
 --> 
 
@@ -53,30 +53,21 @@
 ```
 
 
-## 1. 安装依赖
+# 准备阶段
 
-``` 
 
+- ### 拉取代码
+```
+git clone https://github.com/kangjs7854/node-server-template.git
+```
+- ### 安装依赖
+```
 npm i 
 
 ```
-
-## 2. 启动服务
-
-> 通过nodemon实现了热更新，方便开发
-
-``` 
-npm run start
-
-```
-
-## 3. 数据库的操作
-
-> nodejs没有内置的数据库，使用的mongodb属于非关系型数据库，对数据格式的处理很灵活，使用的键值对的方式存储对与前端开发者来说特别熟悉，除此以外，mongodb在大规模是io读写性能上特别的优异
-
-#### * mongodb的安装完成后，可能会遇到启动闪退的问题，需要配置mongod.conf文件
-
-1.  主要是要在目录多配置一个mongo.conf文件。如果mongodb的目录没有data文件夹，记得新建一个，为下方dbpath的路径
+- ### 安装mongodb  
+官网自行下载，安装完启动时可能会遇到启动闪退的问题，需要配置mongod.conf文件。解决方法：
+ 1. 主要是要在目录多配置一个mongo.conf文件。如果mongodb的目录没有data文件夹，记得新建一个，为下方dbpath的路径
 
 ``` conf
 #mongo.conf文件
@@ -99,7 +90,7 @@ port=27017
 2.  在bin目录打开cmd，安装mongodb服务
 
 ``` 
-mongod.exe --config "//此处为第一步配置的mongo.conf文件的路径" --install 
+mongod.exe --config "//此处为第一步配置的mongo.conf文件的路径 + mongo.conf" --install 
 
 ```
 
@@ -121,34 +112,14 @@ mongod --config "//此处为第一步配置的mongo.conf文件的路径 + mongo.
 ```
 net start mongodb 
 ```
-#### * 启动服务之后需要安装mongoose模块来方便操作数据库
 
-1. 安装依赖
-
-``` 
-npm i mongoose -S
-
+- ### 运行node服务
+```
+npm run start
 ```
 
-2. 在入口文件引入并发起连接（app.js）
 
-``` js
-const mongoose = require("mongoose")
-//连接mongodb服务
-mongoose.set('useFindAndModify', false)
-mongoose.connect('mongodb://localhost/test', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once("open", () => {
-  console.log('mongodb connect success~');
-})
-
-```
-
-3. mongoose的使用
+- ### 学习mongoose的使用
 
 > 这里用router文件夹中的index.js作为例子，通过如何创建一只小猫作为操作演示，简单理解mongoose的概念和使用
 
@@ -185,7 +156,7 @@ Cat.find((err,allCats)=>{
 
 ```
 
-## 4. api的生成
+- ### 学习api的生成
 
 > express的路由可以将前端发送的响应网络请求，映射到对应的中间件去处理，当前端访问了index.js这个文件的路由localhost:3000/api/cat时就会触发该文件中的路由监听，即可处理对应的逻辑，进行数据库的操作等等，这里以index.js为例子
 
@@ -211,9 +182,7 @@ const mongoose = require("mongoose")
 router.get('/cat', function (req, res, next) {
     //生成json格式的数据返回给前端
     res.json({
-        code:0,
-        msg:"success",
-        cat_info:[
+        catInfo:[
             {
                 _id:'45647156456'
                 name:'kitty',
@@ -242,224 +211,12 @@ const indexRouter = require('./routes/index');
 app.use('/api', indexRouter);
 
 ```
-## 5. 跨域
-> 到这儿前端就可以访问api来获取服务器的数据了，由于协议域名端口的不同，服务器的响应会被浏览器拦截，导致跨域的错误，需要做一些处理,列举一个最简单的，本质上还是通过设置响应头告诉浏览器允许跨域请求
-1. 安装cors模块
-```
-npm i cors -S
 
-```
-
-2. 在入口文件引入并调用（app.js）
->注意要在定义api路由之前引入
-```js
-app.use(cors())
-
-```
-
-## 6. 快速生成代码片段
-> 每次写一个curd的api需要敲很多重复代码，所以利用vscode自动生成代码段
-
-- 1. 键盘F1打开顶部搜索栏，输入以下命令行
-```
-configure user snippets
-
-```
-- 2. 点击选择后，输入并点击
-```
-javascript.json
-
-```
-- 3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
-
-通过输入node，即可快捷生成node增删改查的代码段,${TM_FILENAME_BASE} 为获取当前文件名
-```json
-{
-	// Example:
-	"Print to console": {
-		"prefix": "node",
-		"body": [
-			"const express = require('express');",
-			"const axios = require('axios')",
-			"const mongoose = require('mongoose')",
-			"const router = express.Router();",
-			"",
-			"const { ${TM_FILENAME_BASE}Model } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来",
-			"const { insertOrUpDate } = require('../controllers/index')",
-			"",
-			"//查找",
-			"router.get('/${TM_FILENAME_BASE}',((req,res,next) => {",
-			"   const { id } = req.query",
-			"   id ? ${TM_FILENAME_BASE}Model.findById(id).exec((err,${TM_FILENAME_BASE})=>res.json(${TM_FILENAME_BASE}))",
-			"   :${TM_FILENAME_BASE}Model.find().exec((err,${TM_FILENAME_BASE}s)=>res.json(${TM_FILENAME_BASE}s))",
-			"}))",
-			"",
-			"//增加",
-			"router.post('/${TM_FILENAME_BASE}',((req,res,next) => {",
-			"   const { id } = req.body",
-			"   insertOrUpDate(${TM_FILENAME_BASE}Model, {_id: id}, req.body,[],'list')",
-			"   .then(data=>{",
-			"       res.json(data)",
-			"   })",
-			"   .catch(err=>{",
-			"       res.send(err)",
-			"   })",
-			"}))",
-			"",
-			"//删除",
-			"router.delete('/${TM_FILENAME_BASE}',((req,res,next) => {",
-			"   const {id} = req.body",
-			"   ${TM_FILENAME_BASE}Model.findByIdAndRemove(id,(err,removed)=>res.json(removed))",
-			"}))",
-			"",
-			"//修改",
-			"router.put('/${TM_FILENAME_BASE}',((req,res,next) => {",
-			"   const {id} = req.body",
-			"   ${TM_FILENAME_BASE}Model.findByIdAndUpdate(id,{...req.body},{new:true},(err,updated)=>res.json(updated))",
-			"}))",
-			"",
-			"module.exports = router;"
-		],
-		"description": "Log output to console"
-	}
-}
-```
-- 4. 快速尝试
->在router文件夹下新建一个test.js，输入node,回车应该就会出现这一大段代码
-```js
-const express = require('express');
-const axios = require('axios')
-const mongoose = require('mongoose')
-const router = express.Router();
-
-const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
-const { insertOrUpDate } = require('../controllers/index')
-
-//查找
-router.get('/test', ((req, res, next) => {
-    const { id } = req.query
-    id ? testModel.findById(id).exec((err, test) => res.json(test))
-        : testModel.find().exec((err, tests) => res.json(tests))
-}))
-
-//增加
-router.post('/test', ((req, res, next) => {
-    const { id } = req.body
-    insertOrUpDate(testModel, { _id: id }, req.body, [], 'list')
-        .then(data => {
-            res.json(data)
-        })
-        .catch(err => {
-            res.send(err)
-        })
-}))
-
-//删除
-router.delete('/test', ((req, res, next) => {
-    const { id } = req.body
-    testModel.findByIdAndRemove(id, (err, removed) => res.json(removed))
-}))
-
-//修改
-router.put('/test', ((req, res, next) => {
-    const { id } = req.body
-    testModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => res.json(updated))
-}))
-
-module.exports = router;
-
-```
-- 5. 批量引入路由到入口文件（app.js）
-> 当api文件越来越多，每次都要繁琐的引入到app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
-```js
-//记得引入fs模块
-const fs = require('fs')
-
-//批量动态引入路由
-const allRoutes = fs.readdirSync("./routes");//读取routes文件夹下的所有文件名
-allRoutes.forEach(el => {
-  var el = require("./routes/" + el)
-  app.use('/api', el)
-})
+3. 访问localhoset:3000/api/cat获取数据
 
 
-```
 
-- 6. 定义数据结构的模式和模型
-> 以第4步的test.js为例子 
-```js
-const mongoose = require("mongoose")
-
-//定义模式的属性和行为
-const testSchema = mongoose.Schema({
-    name: String
-})
-
-//通过模式生成模型
-const testModel = mongoose.model("testModel", testSchema)
-
-module.exports = {
-    testModel //此处导出的testModel名称应与第四步导入的名称一致
-}
-
-```
-- 7. 编写controllers
- 通过代码片段已经快速生成了增删改查的代码模板，也定义了数据结构，实际上在传统的mvc模型中，
- 还需要controllers来更好的处理业务逻辑，这里我封装了一个插入或更新的函数
-
- 新建controllers文件夹,以及index.js
-
- ````js
-module.exports = {
-    /**
-     * @description
-     * 1.没传id，返回全部内容
-     * 2.传id，无文档，创建一个
-     * 2.传id，有文档，更新
-     * @param {Object} Model 需要进行数据操作的模型
-     * @param {Object} query 匹配条件，有就更新，无就新增
-     * @param {Object} payload 需要插入或者更新的内容
-     * @param {Array} populate 一个参数的时候表示返回全部，两个参数的时候返回对应的联表的属性
-     * @param {String} dataName 需要返回的主要的data的数据名称
-     * @return {Object} 返回处理完的数据
-     */
-    insertOrUpDate(Model, query = {}, payload = {}, populate = [], dataName = "list") {
-        return new Promise((resolve, reject) => {
-            const temp = JSON.stringify(query) != "{}"
-                ? Model.findOneAndUpdate(
-                    query,
-                    payload,
-                    { upsert: true, new: true, setDefaultsOnInsert: true }
-                )
-                : Model.find().populate(populate[0], populate[1])
-            temp.populate(populate[0], populate[1]).exec((err, data) => {
-                if (err) return reject(err)
-                const result = {
-                    returnCode: 200,
-                    returnMsg: "成功",
-                    data: {
-                        [dataName]: data,
-                        timestamp: new Date().getTime(),
-                        extendData: {
-                            data: '扩展字段'
-                        },
-                    },
-                }
-                resolve(result)
-            })
-        })
-    }
-}
-
-
- ````
-
-
-7. postman测试api
- 下载postman，完成api增删改查的测试~
-
-
-## 7. 数据库进阶
+- ### 学习数据库的进阶操作，联表
 >对同一个数据表或者文档进行操作是很容易上手的，但是实际业务中有着很多复杂的场景，数据结构较为复杂，就需要使用到联表的操作
 
 假设有这么两个模型
@@ -512,7 +269,8 @@ orderModel.find({orderType:"奶茶"}).populate(('buyer'))
 
 ````
 
-### 8. 异步
+
+- ### 学习更优雅的处理异步
 > mongoose操作数据库以及express的api有着大量的异步操作，这本身就是node的一个特色，使用事件驱动的方式异步的去进行io操作，极大提高了性能，但是大量的回调函数确实给开发者带来了不少的烦恼，一方面是函数嵌套过深，不好维护；在我看来更大的困难是哪怕是使用promise来解决回调的问题，调式时也非常的不方便，没法通过打断点直观的查看，这里就要使用到es7的async await来解决问题
 
 - mongoose内置的save方法会返回一个thenable,这意味着我们可以通过使用promise的then来处理保存后的逻辑
@@ -534,3 +292,304 @@ await testModel.findOne().exec()
 ```
 
 虽然就功能而已，上面两个是等效的，但是推荐使用加上exec()函数
+
+
+
+# 正式开始
+> 有了前面的介绍，应该对node开发restful服务有了一定的认识，接下来就一起来创建一个test的api，愉快的mock数据吧！
+
+在开发一个api时我们应该思考需要它实现什么样的功能，需要我们定义什么格式的数据结构来满足需求，在访问该api时如何处理业务逻辑
+
+所以首当其冲,我们先
+
+- ### 定义数据结构的模式和模型
+>Model/index.js
+```js
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
+const Model = mongoose.model
+
+//联表时用于标志存储数据的唯一性
+const ObjectId = Schema.Types.ObjectId;
+
+//定义模式的属性和行为
+const testSchema = Schema({
+    name: String
+})
+
+//通过模式生成模型
+const testModel = model("testModel", testSchema)
+
+//导出模型，以便api通过它进行数据的操作
+module.exports = {
+    testModel 
+}
+```
+
+在传统的mvc模型中，M代表模型，V代表视图，即最后的展示的json数据；C就是controller，代表了行为的操作
+
+我们定义了数据的模型，接下来就做的就是数据行为的操作
+
+- ### 定义行为
+>controller/index.js,定义了通过mongoose进行增删改查的数据操作，其中使用async和await优化了异步处理
+
+ ````js
+module.exports = {
+    find,
+    insert,
+    remove,
+    update
+}
+async function find(Model, query = {}, populate = []) {
+    //匹配条件为空，返回全部,否则返回匹配到的数据
+    return isNull(query)
+        ? await Model.find().populate(populate[0], populate[1]).exec()
+        : await Model.findOne(query).populate(populate[0], populate[1]).exec()
+}
+
+async function insert(Model, query = {}, payload = {}, populate = []) {
+    !isNull(query) && await Model.findOneAndUpdate(query, payload, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    return await Model.find().populate(populate[0], populate[1]).exec()
+}
+
+async function remove(Model, id, isRemoveAll = false, populate = []) {
+    if (isRemoveAll) {
+        const data = await Model.find().exec()
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]._id != id) {
+                await Model.findByIdAndRemove(data[i]._id)
+            }
+        }
+    } else {
+        await Model.findByIdAndRemove(id).exec()
+    }
+    return await Model.find().populate(populate[0], populate[1]).exec()
+}
+
+async function update(Model,query,payload){
+    await Model.findOneAndUpdate(query,payload).exec()
+    return await Model.find().exec()
+}
+
+function isNull(obj) {
+    for (let i in obj) {
+        return obj[i] == 'undefined' || obj[i] == 'null' || !obj[i]
+    }
+}
+
+
+ ````
+
+ - ### api路由分发
+> 使用express的路由机制，在访问路由时触发对应的中间件及对应的controller函数，完成对数据的操作，把我们想要的数据返回给客户端
+
+ ```js
+const express = require('express');
+const router = express.Router();
+
+const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+const { find, insert, remove,update } = require('../controllers/index');
+
+//查找
+router.get('/test', async(req, res, next) => {
+   const { id } = req.query
+   const test = await find(testModel, { _id: id })
+   res.json(test)
+})
+
+//增加 || 更新
+router.post('/test', async(req,res,next) => {
+   const { id, name } = req.body
+   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const payload = { ...req.body } //内容
+
+   const data = await insert(testModel, query, payload)
+   res.json(data)
+})
+
+//删除
+router.delete('/test', async(req,res,next) => {
+   const { id } = req.body
+   const data = await remove(testModel,id)
+   res.json(data)
+})
+
+//修改
+router.put('/test', async(req,res,next) => {
+   const { id } = req.body
+  const data = await update(testModel, { _id: id }, { ...req.body })
+   res.json(data)
+})
+
+module.exports = router;
+```
+
+- ### 引入路由及注册
+> 原本需要在app.js入口文件引入编写的router文件，然后对齐进行注册使用，考虑到api文件越来越多导致的繁琐操作，使用了批量引入的方法
+
+ 当api文件越来越多，每次都要繁琐的引入到app.js并且调用app.use()，非常的不方便,一开始想使用webpack中用的比较多的  require.context（）在批量引入，但是在nodej懒得安装webpack及配置，于是利用了var声明变量的老旧特性（变废为宝？）
+```js
+//记得引入fs模块
+const fs = require('fs')
+
+//批量动态引入路由
+const allRoutes = fs.readdirSync("./routes");//读取routes文件夹下的所有文件名
+allRoutes.forEach(el => {
+  var el = require("./routes/" + el)
+  app.use('/api', el)
+})
+
+
+```
+
+到这我们就完成了一个api的开发
+
+打开浏览器输入 localhost:3000/api/test,应该可以看到一个空数组的标识，这是因为此时还没有数据
+
+赶紧下载postman进行增删改查的操作把！
+
+
+- ### 快速生成代码片段
+> 每次写一个curd的api需要敲很多重复代码，所以利用vscode自动生成代码段(其实是因为懒)
+
+1. 键盘F1打开顶部搜索栏，输入以下命令行
+```
+configure user snippets
+
+```
+2. 点击选择后，输入并点击
+```
+javascript.json
+
+```
+3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
+
+通过输入node，即可快捷生成node增删改查的代码段,${TM_FILENAME_BASE} 为获取当前文件名
+```
+{
+	// Place your snippets for javascript here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	"Print to console": {
+		"prefix": "node",
+		"body": [
+			"const express = require('express');",
+			"const router = express.Router();",
+			"",
+			"const { ${TM_FILENAME_BASE}Model } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来",
+			"const { find, insert, remove,update } = require('../controllers/index');",
+			"",
+			"//查找",
+			"router.get('/${TM_FILENAME_BASE}', async(req, res, next) => {",
+			"   const { id } = req.query",
+			"   const ${TM_FILENAME_BASE} = await find(${TM_FILENAME_BASE}Model, { _id: id })",
+			"   res.json(${TM_FILENAME_BASE})",
+			"})",
+			"",
+			"//增加 || 更新",
+			"router.post('/${TM_FILENAME_BASE}', async(req,res,next) => {",
+			"   const { id, name } = req.body",
+			"   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件",
+			"   const payload = { ...req.body } //内容",
+			"",
+			"   const data = await insert(${TM_FILENAME_BASE}Model, query, payload)",
+			"   res.json(data)",
+			"})",
+			"",
+			"//删除",
+			"router.delete('/${TM_FILENAME_BASE}', async(req,res,next) => {",
+			"   const { id } = req.body",
+			"   const data = await remove(${TM_FILENAME_BASE}Model,id)",
+			"   res.json(data)",
+			"})",
+			"",
+			"//修改",
+			"router.put('/${TM_FILENAME_BASE}', async(req,res,next) => {",
+			"   const { id } = req.body",
+			"  const data = await update(${TM_FILENAME_BASE}Model, { _id: id }, { ...req.body })",
+			"   res.json(data)",
+			"})",
+			"",
+			"module.exports = router;"
+		],
+		"description": "Log output to console"
+	}
+}
+```
+4. 快速尝试
+
+假如你接下来还要想创建一个用户的api，只需要定义用户的数据结构，将其模型暴露出去
+
+```js
+//model/index.js
+const userSchema = Shcema({
+    name:String,
+    age:Number,
+    sex:String
+})
+
+const userModel = Model('User',userSchema)
+
+module.exports = {
+    userModel
+}
+
+```
+
+
+在routes文件夹创建一个新的api文件user.js
+
+在编辑器敲击 ```node ``` 出现提示回车，是不是出现了这么一大片的代码
+
+
+```js
+const express = require('express');
+const router = express.Router();
+
+const { userModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+const { find, insert, remove,update } = require('../controllers/index');
+
+//查找
+router.get('/user', async(req, res, next) => {
+   const { id } = req.query
+   const user = await find(userModel, { _id: id })
+   res.json(user)
+})
+
+//增加 || 更新
+router.post('/user', async(req,res,next) => {
+   const { id, name } = req.body
+   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const payload = { ...req.body } //内容
+
+   const data = await insert(userModel, query, payload)
+   res.json(data)
+})
+
+//删除
+router.delete('/user', async(req,res,next) => {
+   const { id } = req.body
+   const data = await remove(userModel,id)
+   res.json(data)
+})
+
+//修改
+router.put('/user', async(req,res,next) => {
+   const { id } = req.body
+  const data = await update(userModel, { _id: id }, { ...req.body })
+   res.json(data)
+})
+
+module.exports = router;
+
+
+```
+
+然后你打开postman输入localhost:3000/api/user 是不是就可以愉快的进行增删改查了，愉快的进行数据mock了
+
+
+
+
+
