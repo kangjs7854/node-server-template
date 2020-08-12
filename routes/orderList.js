@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-11 09:41:34
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 19:33:07
+ * @LastEditTime: 2020-08-12 10:46:38
  * @FilePath: \server\routes\orderList.js
  */
 const express = require('express');
@@ -12,6 +12,7 @@ const router = express.Router();
 const { orderListModel, memberInfoModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
 const { insertOrUpDate } = require("../controllers/index");
 const e = require('express');
+const { log } = require('debug');
 
 
 const templateResult = {
@@ -33,7 +34,7 @@ router.get('/orderList', ((req, res, next) => {
 }))
 
 //增加
-router.post('/orderList', ((req, res, next) => {
+router.post('/orderList', async (req, res, next) => {
     const { memberId, doctorName } = req.body
 
     if (!memberId) return res.json(null)
@@ -42,7 +43,6 @@ router.post('/orderList', ((req, res, next) => {
         memberInfoModel.findById(memberId)
             .populate('orders')
             .exec((err, all) => {
-
                 Object.assign(templateResult.data, {
                     orderList: all.orders
                 })
@@ -52,15 +52,19 @@ router.post('/orderList', ((req, res, next) => {
         return
     }
 
-    getUserName().then(memberName => saveOrder(memberName))
+    // getUserName().then(memberName => saveOrder(memberName))
 
-    function getUserName() {
-        return new Promise((resolve, reject) => {
-            memberInfoModel.findById(memberId).exec((err, memberInfo) => {
-                if (err) reject(err)
-                resolve(memberInfo.memberName)
-            })
-        })
+    try {
+        const memberName = await getUserName()
+        saveOrder(memberName)
+    } catch (error) {
+        console.log(error);
+    }
+
+
+    async function getUserName() {
+        const memberInfo = await memberInfoModel.findById(memberId)
+        return memberInfo.memberName
     }
 
     function saveOrder(memberName) {
@@ -103,7 +107,7 @@ router.post('/orderList', ((req, res, next) => {
     //         res.send(err)
     //     })
 
-}))
+})
 
 //删除
 router.delete('/orderList', ((req, res, next) => {

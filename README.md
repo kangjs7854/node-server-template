@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 15:44:15
+ * @LastEditTime: 2020-08-12 11:01:39
  * @FilePath: \server\README.md
 --> 
 
@@ -512,3 +512,25 @@ orderModel.find({orderType:"奶茶"}).populate(('buyer'))
 
 ````
 
+### 8. 异步
+> mongoose操作数据库以及express的api有着大量的异步操作，这本身就是node的一个特色，使用事件驱动的方式异步的去进行io操作，极大提高了性能，但是大量的回调函数确实给开发者带来了不少的烦恼，一方面是函数嵌套过深，不好维护；在我看来更大的困难是哪怕是使用promise来解决回调的问题，调式时也非常的不方便，没法通过打断点直观的查看，这里就要使用到es7的async await来解决问题
+
+- mongoose内置的save方法会返回一个thenable,这意味着我们可以通过使用promise的then来处理保存后的逻辑
+
+```
+const promise = testModel.save()
+promise.then(res=>{
+
+})
+
+
+```
+
+- mongoose的查询的方法返回的不是一个完整的promise，可以加上exec()函数更好的追踪堆栈
+```
+await testModel.findOne()
+await testModel.findOne().exec()
+
+```
+
+虽然就功能而已，上面两个是等效的，但是推荐使用加上exec()函数

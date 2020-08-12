@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 19:33:00
+ * @LastEditTime: 2020-08-12 09:45:40
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
