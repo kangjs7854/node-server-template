@@ -1,46 +1,44 @@
 /*
  * @Date: 2020-07-31 11:52:40
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-11 14:54:27
+ * @LastEditTime: 2020-08-12 15:57:24
  * @FilePath: \server\routes\test.js
  */
 const express = require('express');
-const axios = require('axios')
-const mongoose = require('mongoose')
 const router = express.Router();
 
 const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
-const { insertOrUpDate } = require('../controllers/index')
+const { find, insert, remove,update } = require('../controllers/index');
 
 //查找
-router.get('/test', ((req, res, next) => {
-    const { id } = req.query
-    id ? testModel.findById(id).exec((err, test) => res.json(test))
-        : testModel.find().exec((err, tests) => res.json(tests))
-}))
+router.get('/test', async(req, res, next) => {
+   const { id } = req.query
+   const test = await find(testModel, { _id: id })
+   res.json(test)
+})
 
-//增加
-router.post('/test', ((req, res, next) => {
-    const { id } = req.body
-    insertOrUpDate(testModel, { _id: id }, req.body, [], 'list')
-        .then(data => {
-            res.json(data)
-        })
-        .catch(err => {
-            res.send(err)
-        })
-}))
+//增加 || 更新
+router.post('/test', async(req,res,next) => {
+   const { id, name } = req.body
+   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const payload = { ...req.body } //内容
+
+   const data = await insert(testModel, query, payload)
+   res.json(data)
+})
 
 //删除
-router.delete('/test', ((req, res, next) => {
-    const { id } = req.body
-    testModel.findByIdAndRemove(id, (err, removed) => res.json(removed))
-}))
+router.delete('/test', async(req,res,next) => {
+   const { id } = req.body
+   const data = await remove(testModel,id)
+   res.json(data)
+})
 
 //修改
-router.put('/test', ((req, res, next) => {
-    const { id } = req.body
-    testModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => res.json(updated))
-}))
+router.put('/test', async(req,res,next) => {
+   const { id } = req.body
+  const data = await update(testModel, { _id: id }, { ...req.body })
+   res.json(data)
+})
 
 module.exports = router;

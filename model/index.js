@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-12 09:45:40
+ * @LastEditTime: 2020-08-12 13:52:31
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -106,6 +106,24 @@ const orderListSchema = Schema({
 
 })
 
+const orderInfoSchema = Schema({
+    orderId:{
+        type:ObjectId,
+        ref:"OrderList"
+    },
+    currentStatus:String,
+    orderStatus:{
+        reservationStatus:Number,
+        signStatus:Number,
+        examinePayStatus:Number,
+        examineStatus:Number,
+        reportStatus:Number,
+        outpatientPayStatus:Number,
+        medicalStatus:Number
+    }
+
+})
+
 
 //联表测试
 const orderSchema = Schema({
@@ -135,7 +153,9 @@ const hosModel = Model("Hos", hosSchema)
 const memberInfoModel = Model("MemberInfo", memberInfoSchema)
 const cardModel = Model("Card", cardSchema)
 const orderListModel = Model("OrderList", orderListSchema)
+const orderInfoModel = Model("OrderInfo",orderInfoSchema)
 
+  
 module.exports = {
     userInfoModel,
     patientModel,
@@ -149,5 +169,6 @@ module.exports = {
     hosModel,
     memberInfoModel,
     cardModel,
-    orderListModel
+    orderListModel,
+    orderInfoModel
 }
