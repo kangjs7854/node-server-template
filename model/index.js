@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-12 13:52:31
+ * @LastEditTime: 2020-08-14 09:34:26
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -81,7 +81,8 @@ const cardSchema = Schema({
 
 const testSchema = Schema({
     name: String,
-    age: Number
+    age: Number,
+    url:String
 })
 
 const hosSchema = Schema({
@@ -124,6 +125,9 @@ const orderInfoSchema = Schema({
 
 })
 
+const userPhoneSchem = Schema({
+    
+})
 
 //联表测试
 const orderSchema = Schema({

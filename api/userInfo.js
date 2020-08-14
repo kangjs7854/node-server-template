@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-29 14:34:55
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-06 19:01:39
+ * @LastEditTime: 2020-08-13 14:51:29
  * @FilePath: \server\routes\userInfo.js
  */
 const express = require('express');
@@ -51,7 +51,7 @@ router.post("/user_info", (req, res) => {
     if(id){
         userInfoModel.findByIdAndUpdate(id, { ...req.body }, { new: true }, (err, updated) => {
             Object.assign(updated, {
-                loginToken:'jian91kang160',
+                loginToken:'',
                 timestamp: new Date().getTime(),
                 extendData: {
                     data: '扩展字段'

@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-12 17:17:57
+ * @LastEditTime: 2020-08-14 10:36:19
  * @FilePath: \server\README.md
 --> 
 
@@ -30,7 +30,7 @@
     |   |   |-- WXBizDataCrypt.js 
     |   |-- stylesheets
     |       |-- style.css
-    |-- routes 				api路由分发
+    |-- api 				api接口
     |   |-- appointmentOrder.js
     |   |-- card.js
     |   |-- clinicGuide.js
@@ -43,6 +43,8 @@
     |   |-- test.js
     |   |-- userInfo.js
     |   |-- userPhone.js
+    |-- routes              视图层路由
+    |   |-- index.js        首页路由            
     |-- views 				视图层（这里未使用模板引擎，所以未使用）
         |-- error.jade
         |-- index.jade
@@ -589,7 +591,4 @@ module.exports = router;
 
 然后你打开postman输入localhost:3000/api/user 是不是就可以愉快的进行增删改查了，愉快的进行数据mock了
 
-
-
-
-
+作为一个没有感情的切图仔，自从有了这个模板，人已经在postman mock到失联，成为了一个没有感情的curd仔
