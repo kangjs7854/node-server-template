@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-14 09:34:26
+ * @LastEditTime: 2020-08-15 14:57:52
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -82,7 +82,7 @@ const cardSchema = Schema({
 const testSchema = Schema({
     name: String,
     age: Number,
-    url:String
+    url: String
 })
 
 const hosSchema = Schema({
@@ -104,29 +104,25 @@ const orderListSchema = Schema({
     doctorId: Number,
     depId: Number,
     userName: String
-
 })
 
-const orderInfoSchema = Schema({
-    orderId:{
-        type:ObjectId,
-        ref:"OrderList"
+const orderStatusSchema = Schema({
+    orderNo: {
+        type: ObjectId,
+        ref: "OrderList"
     },
-    currentStatus:String,
-    orderStatus:{
-        reservationStatus:Number,
-        signStatus:Number,
-        examinePayStatus:Number,
-        examineStatus:Number,
-        reportStatus:Number,
-        outpatientPayStatus:Number,
-        medicalStatus:Number
-    }
-
+    currentStatus: String,
+    reservationStatus: Number,
+    signStatus: Number,
+    examinePayStatus: Number,
+    examineStatus: Number,
+    reportStatus: Number,
+    outpatientPayStatus: Number,
+    medicineStatus: Number
 })
 
 const userPhoneSchem = Schema({
-    
+
 })
 
 //联表测试
@@ -157,9 +153,8 @@ const hosModel = Model("Hos", hosSchema)
 const memberInfoModel = Model("MemberInfo", memberInfoSchema)
 const cardModel = Model("Card", cardSchema)
 const orderListModel = Model("OrderList", orderListSchema)
-const orderInfoModel = Model("OrderInfo",orderInfoSchema)
+const orderStatusModel = Model("OrderStatus", orderStatusSchema)
 
-  
 module.exports = {
     userInfoModel,
     patientModel,
@@ -174,5 +169,5 @@ module.exports = {
     memberInfoModel,
     cardModel,
     orderListModel,
-    orderInfoModel
+    orderStatusModel,
 }

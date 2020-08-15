@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-31 11:52:40
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-14 11:52:40
+ * @LastEditTime: 2020-08-15 10:30:44
  * @FilePath: \server\api\test.js
  */
 const express = require('express');
@@ -13,8 +13,6 @@ const { find, insert, remove, update } = require('../controllers/index');
 //查找
 router.get('/test', async (req, res, next) => {
    const { id, url } = req.query
-   res.json({...req.body})
-   return
    const test = await find(testModel, { _id: id })
    res.json(test)
 })

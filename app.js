@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-14 11:38:35
+ * @LastEditTime: 2020-08-15 10:50:36
  * @FilePath: \server\app.js
  */
 var createError = require('http-errors');
@@ -37,6 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
+
 //批量动态引入api
 const allApi = fs.readdirSync("./api");
 allApi.forEach(el => {
