@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-15 14:57:52
+ * @LastEditTime: 2020-08-17 14:13:07
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -155,6 +155,14 @@ const cardModel = Model("Card", cardSchema)
 const orderListModel = Model("OrderList", orderListSchema)
 const orderStatusModel = Model("OrderStatus", orderStatusSchema)
 
+
+class quicklyMockModel{
+    constructor(ModelName,schema){
+        this.Schema = mongoose.Schema(schema)
+        this.Model = mongoose.model(ModelName,this.Schema)
+    }
+}
+
 module.exports = {
     userInfoModel,
     patientModel,
@@ -170,4 +178,6 @@ module.exports = {
     cardModel,
     orderListModel,
     orderStatusModel,
+
+    quicklyMockModel
 }
