@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-15 10:50:36
+ * @LastEditTime: 2020-08-18 10:35:24
  * @FilePath: \server\app.js
  */
 var createError = require('http-errors');
@@ -38,19 +38,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
 
-//批量动态引入api
-const allApi = fs.readdirSync("./api");
+//批量动态引入路由
+const allApi = fs.readdirSync("./routes");
 allApi.forEach(el => {
-  var el = require("./api/" + el)
+  var el = require("./routes/" + el)
   app.use('/api', el)
 })
 
-//批量动态引入routes
-const allRoutes = fs.readdirSync("./routes");
-allRoutes.forEach(el => {
-  var el = require("./routes/" + el)
-  app.use('/', el)
-})
+
 
 
 // catch 404 and forward to error handler
