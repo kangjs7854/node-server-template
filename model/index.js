@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-30 11:52:11
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-17 14:13:07
+ * @LastEditTime: 2020-08-18 18:15:53
  * @FilePath: \server\model\index.js
  */
 const mongoose = require("mongoose")
@@ -121,9 +121,6 @@ const orderStatusSchema = Schema({
     medicineStatus: Number
 })
 
-const userPhoneSchem = Schema({
-
-})
 
 //联表测试
 const orderSchema = Schema({

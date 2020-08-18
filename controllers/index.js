@@ -1,12 +1,12 @@
 /*
  * @Date: 2020-08-11 13:46:44
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-18 11:17:39
+ * @LastEditTime: 2020-08-18 17:31:50
  * @FilePath: \server\controllers\index.js
  */
 
 module.exports = class Controller {
-    constructor(Model){
+    constructor(Model) {
         this.Model = Model
     }
 
@@ -42,7 +42,7 @@ module.exports = class Controller {
         return await this.Model.find().populate(populate[0], populate[1]).exec()
     }
 
-    async update(query, payload) {      
+    async update(query, payload) {
         await this.Model.findOneAndUpdate(query, payload).exec()
         return await this.Model.find().exec()
     }
