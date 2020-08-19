@@ -2,6 +2,7 @@
   "name": "server",
   "version": "0.0.0",
   "private": true,
+  "description":"Quickly generate the Restful API project template using NodeJS and MongoDB",
   "scripts": {
     "start": "nodemon ./bin/www",
     "test": "jest"
