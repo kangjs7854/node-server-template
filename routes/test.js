@@ -6,10 +6,18 @@
  */
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
-const { testModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
+const { quicklyMockModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来
 const Controller = require('../controllers/index');
-const testController = new Controller(testModel)
+//快速mock数据，生成数据模型
+const test = new quicklyMockModel('test',{
+    name:String,
+    age:Number
+})
+//传入该模型生成控制器
+const testController = new Controller(test.Model)
 
 //查找
 router.get('/test', async(req, res, next) => {

@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-14 10:36:19
+ * @LastEditTime: 2020-08-19 09:51:18
  * @FilePath: \server\README.md
 --> 
 
@@ -467,7 +467,7 @@ javascript.json
 3. 配置基础的curd所需要的配置，根据文件名动态生成基础格式
 
 通过输入node，即可快捷生成node增删改查的代码段,${TM_FILENAME_BASE} 为获取当前文件名
-```
+```json
 {
 	// Place your snippets for javascript here. Each snippet is defined under a snippet name and has a prefix, body and 
 	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
@@ -592,3 +592,91 @@ module.exports = router;
 然后你打开postman输入localhost:3000/api/user 是不是就可以愉快的进行增删改查了，愉快的进行数据mock了
 
 作为一个没有感情的切图仔，自从有了这个模板，人已经在postman mock到失联，成为了一个没有感情的curd仔
+
+
+# 优化
+> 虽然定义了增删改查的函数，但是每次都要把数据模型作为参数引入，十分的麻烦
+
+这里可以使用es6的class，通过传入模型生成控制器的实例,把增删改查作为实例的方法。
+```js
+//controller/index.js
+module.exports = class Controller {
+    constructor(Model) {
+        this.Model = Model
+    }
+
+    static isNull(obj) {
+        for (let i in obj) {
+            return obj[i] == 'undefined' || obj[i] == 'null' || !obj[i]
+        }
+    }
+
+    async find(query = {}, populate = []) {
+        //匹配条件为空，返回全部,否则返回匹配到的数据
+        return Controller.isNull(query)
+            ? await this.Model.find().populate(populate[0], populate[1]).exec()
+            : await this.Model.findOne(query).populate(populate[0], populate[1]).exec()
+    }
+
+    async insert(query = {}, payload = {}, populate = []) {
+       //省略
+    }
+
+    async remove(id, isRemoveAll = false, populate = []) {
+       //省略
+    }
+
+    async update(query, payload) {
+       //省略
+    }
+}
+```
+
+这样在新建一个api时，就可以把该控制器的类引入，然后通过传入数据模型，生成该实例的控制器，更好的实现增删改查。
+
+其实可以把生成模型的过程也做类似的处理，我们在mock接口的时候，只需要传入需要的数据字段及类型，就可以快速实现api接口的增删改查。
+把Model抽离成出去一个单独的模块其实在这里有点矫正过忹的意思，很多时候为了查看我写的这个api，有什么样的数据格式我得在一堆schema中反复滚动
+所以我在model层新建了一个快速生成数据模型的类，在需要快速mock接口时可以使用到这个。
+
+```js
+//model/index.js
+class quicklyMockModel{
+    constructor(ModelName,schema){
+        this.Schema = mongoose.Schema(schema)
+        this.Model = mongoose.model(ModelName,this.Schema)
+    }
+}
+```
+
+接下来就还是使用test.js这个api路由作为例子
+
+```js
+const { quicklyMockModel } = require('../model/index') 
+const Controller = require('../controllers/index');
+//快速mock数据，生成数据模型
+const test = new quicklyMockModel('test',{
+    name:String,
+    age:Number
+})
+//传入该模型生成控制器
+const testController = new Controller(test.Model)
+
+//查找
+router.get('/test', async(req, res, next) => {
+   const { id } = req.query
+   const test = await testController.find({ _id: id })
+   res.json(test)
+})
+
+//增加 || 更新
+router.post('/test', async(req,res,next) => {
+   const { id, name } = req.body
+   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const payload = { ...req.body } //内容
+
+   const data = await testController.insert(query, payload)
+   res.json(data)
+})
+```
+这样处理之后，我们只需要改变所需要的字段和数据类型，就可以快速生成增删改查的符合restful风格的api；
+控制器的行为也更加优雅，只需要关注检索的参数。
