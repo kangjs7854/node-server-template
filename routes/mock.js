@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-18 10:33:27
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-20 18:37:40
+ * @LastEditTime: 2020-08-21 11:37:16
  * @FilePath: \server\routes\mock.js
  */
 const express = require('express');
@@ -21,8 +21,8 @@ router.get('/mock', async (req, res, next) => {
 
 //增加 || 更新
 router.post('/mock/:id', async (req, res, next) => {
-   const { id, name ,Schema} = req.body
-   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const { id, name ,Schema,uniqueKey} = req.body
+   const query = { [uniqueKey]:req.body[uniqueKey] } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
    const payload = { ...req.body } //内容
    const modelName = req.originalUrl.slice(10)
    //动态添加schema的字段和数据类型
