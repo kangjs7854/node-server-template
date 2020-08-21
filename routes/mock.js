@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-18 10:33:27
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-21 11:37:16
+ * @LastEditTime: 2020-08-21 15:47:49
  * @FilePath: \server\routes\mock.js
  */
 const express = require('express');
@@ -9,14 +9,38 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
+const {quicklyMockModel} = require("../model/index")
 const Controller = require('../controllers/index');
 
 const mockSchema = mongoose.Schema()
+
+const allMockModel = new quicklyMockModel('allMock',{
+   methods:String,
+   url:String,
+   dataSource:{
+      key:String,
+      schemaType:String,
+      schemaKey:String,
+      schemaValue:String
+   },
+})
+
+const allMockController = new Controller(allMockModel.Model)
 //查找
 router.get('/mock', async (req, res, next) => {
    const { id } = req.query
-   const mock = await mockController.find({ _id: id })
+   const mock = await allMockController.find({ _id: id })
    res.json(mock)
+})
+
+
+router.post("/mock",async(req,res)=>{
+   const {url} = req.body
+   if(!url) return 
+   const query = {url}
+   const payload = { ...req.body } //内容
+   const data = await allMockController.insert(query, payload)
+   res.json({data})
 })
 
 //增加 || 更新
@@ -32,13 +56,29 @@ router.post('/mock/:id', async (req, res, next) => {
    //传入该模型生成控制器
    const mockController = new Controller(mockModel)
    const data = await mockController.insert(query, payload)
+
+
+   let dataSource = []
+   for(let i in Schema){
+      dataSource.push({
+         schemaKey:i,
+         schemaType:Schema[i],
+         schemaValue:req.body[i]
+      })
+   }
+   dataSource = dataSource.map((el,index)=> Object.assign(el,{key:index+''}))
+   const all = await allMockController.insert({url:modelName},{
+      dataSource,
+      methods:'POST',
+      url:modelName
+   })
    res.json({data})
 })
 
 //删除
 router.delete('/mock', async (req, res, next) => {
-   const { id } = req.body
-   const data = await mockController.remove(id)
+   const { url } = req.body
+   const data = await allMockController.remove({url})
    res.json(data)
 })
 

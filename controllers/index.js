@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-08-11 13:46:44
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-18 17:31:50
+ * @LastEditTime: 2020-08-21 15:50:49
  * @FilePath: \server\controllers\index.js
  */
 
@@ -28,16 +28,16 @@ module.exports = class Controller {
         return await this.Model.find().populate(populate[0], populate[1]).exec()
     }
 
-    async remove(id, isRemoveAll = false, populate = []) {
+    async remove(query = {}, isRemoveAll = false, populate = []) {
         if (isRemoveAll) {
             const data = await this.Model.find().exec()
             for (let i = 0; i < data.length; i++) {
                 if (data[i]._id != id) {
-                    await this.Model.findByIdAndRemove(data[i]._id)
+                    await this.Model.findOneAndRemove(data[i]._id)
                 }
             }
         } else {
-            await this.Model.findByIdAndRemove(id).exec()
+            await this.Model.findOneAndRemove(query).exec()
         }
         return await this.Model.find().populate(populate[0], populate[1]).exec()
     }
