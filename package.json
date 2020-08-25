@@ -8,8 +8,9 @@
     "url": "git+https://github.com/kangjs7854/node-server-template.git"
   },
   "scripts": {
-    "start": "nodemon ./bin/www",
-    "test": "jest"
+    "start": "node ./bin/www",
+    "test": "jest",
+    "dev":"nodemon .bin/www"
   },
   "dependencies": {
     "axios": "^0.19.2",

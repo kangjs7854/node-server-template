@@ -1,7 +1,7 @@
 <!--
  * @Date: 2020-07-29 15:50:45
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-19 09:51:18
+ * @LastEditTime: 2020-08-25 10:21:57
  * @FilePath: \server\README.md
 --> 
 
@@ -680,3 +680,58 @@ router.post('/test', async(req,res,next) => {
 ```
 这样处理之后，我们只需要改变所需要的字段和数据类型，就可以快速生成增删改查的符合restful风格的api；
 控制器的行为也更加优雅，只需要关注检索的参数。
+
+
+# 部署
+
+1. vscode扩展程序搜索```docker```安装后点击```F1```输入```Add Docker file to workspace```快速生成docker相关的文件
+   
+- ```Dockerfile```
+- ```docker-compose```
+- ```.dockerignore```
+
+2. 数据库配置
+
+- ```docker-compose``` 新增拉去mongodb数据库的镜像
+  ```
+        services:
+    +   db:
+    +       image: mongo
+    +       restart: always
+        server:
+            image: server
+            build: .
+            environment:
+            NODE_ENV: production
+            ports:
+            - 5000
+  ```
+
+- ```Dockerfile```新增数据库环境变量
+  ```
+        # 设置环境变量
+        ENV NODE_ENV=production
+    +   ENV MONGO_URI=mongodb://db:27017/mock
+        ENV HOST=0.0.0.0
+        ENV PORT=5000
+  ```
+
+- 修改数据库连接路径
+  ```
+    +   const mongodbPath = process.env.MONGO_URI || 'mongodb://localhost/test'
+        mongoose.connect( mongodbPath, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        })
+
+  ```
+
+3. 推送到服务器  
+   这一步是要将项目拷贝到购买的云服务器上，可以使用xftp这样的便于传入资源到服务器上的软件，也可以在云服务器上使用git拉取项目
+
+4. 生成镜像并运行容器  
+   - 进入服务器存放改项目的路径，例如我的是```/home/mock```
+   - 运行```docker-compose up --build```等待编译完成实现部署
+   - 若无报错运行```docker ps```查看所有运行的容器
+  
+

@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-23 10:16:24
  * @LastEditors: kjs
- * @LastEditTime: 2020-08-18 10:35:24
+ * @LastEditTime: 2020-08-24 18:42:40
  * @FilePath: \server\app.js
  */
 var createError = require('http-errors');
@@ -16,7 +16,7 @@ const ejs = require("ejs")
 var app = express();
 
 mongoose.set('useFindAndModify', false)
-mongoose.connect('mongodb://localhost/test', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/test', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -45,7 +45,9 @@ allApi.forEach(el => {
   app.use('/api', el)
 })
 
-
+app.use("/",(req,res)=>{
+  res.render("index")
+})
 
 
 // catch 404 and forward to error handler
