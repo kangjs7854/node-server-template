@@ -14,7 +14,7 @@ const Controller = require('../controllers/index');
 
 const mockSchema = mongoose.Schema()
 
-const allMockModel = new quicklyMockModel('AllMock22',{
+const allMockModel = new quicklyMockModel('AllMockApi',{
    method:String,
    apiName:String,
    dataSource:[
@@ -61,7 +61,7 @@ router.post('/mock/:id', async (req, res, next) => {
    //动态添加schema的字段和数据类型
    mockSchema.add(Schema)
    //再生成模型
-   const mockModel = mongoose.model(apiName,mockSchema)
+   const mockModel = mongoose.model('MockApi',mockSchema)
    //传入该模型生成控制器
    const mockController = new Controller(mockModel)
    const data = await mockController.insert(query, payload)
