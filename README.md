@@ -7,8 +7,9 @@
 
 # node-server-template
 
-> node开发接口的项目模板，主要是用来开发一些api,在前端开发时方便mock数据，接口联调时更有效率地交付产品
+> node开发接口的项目模板，主要是用来开发一些api,在前端开发时方便mock数据，接口联调时更有效率地交付产品。另一方面，学习使用node可以扩展自己的知识面，接触到网络数据库相关的知识
 
+服务端的架构是经典的MVC模式
 ```
 |-- server
     |-- .gitignore 			git的忽略文件
@@ -19,9 +20,9 @@
     |   |-- www
     |-- client
     |   |-- index.html 
-    |-- controllers 			行为层
+    |-- controllers 			行为层,封装了增删改查的控制器的类
     |   |-- index.js 
-    |-- model 				模型层
+    |-- model 				模型层，定义所需数据的结构和行为
     |   |-- index.js
     |-- public 				公共资源文件
     |   |-- images
@@ -30,7 +31,7 @@
     |   |   |-- WXBizDataCrypt.js 
     |   |-- stylesheets
     |       |-- style.css
-    |-- api 				api接口
+    |-- routes 				定义api接口
     |   |-- appointmentOrder.js
     |   |-- card.js
     |   |-- clinicGuide.js
@@ -42,10 +43,8 @@
     |   |-- patient.js
     |   |-- test.js
     |   |-- userInfo.js
-    |   |-- userPhone.js
-    |-- routes              视图层路由
-    |   |-- index.js        首页路由            
-    |-- views 				视图层（这里未使用模板引擎，所以未使用）
+    |   |-- userPhone.js    
+    |-- views 				视图层
         |-- error.jade
         |-- index.jade
         |-- layout.jade
