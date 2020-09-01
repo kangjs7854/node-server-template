@@ -14,15 +14,19 @@ const Controller = require('../controllers/index');
 
 const mockSchema = mongoose.Schema()
 
-const allMockModel = new quicklyMockModel('allMock',{
-   methods:String,
-   url:String,
-   dataSource:{
-      key:String,
-      schemaType:String,
-      schemaKey:String,
-      schemaValue:String
-   },
+const allMockModel = new quicklyMockModel('AllMock22',{
+   method:String,
+   apiName:String,
+   dataSource:[
+      {
+         key:String,
+         value:String,
+         unique:Boolean,
+         type:{
+            type:String
+         }
+      }
+   ],
 })
 
 const allMockController = new Controller(allMockModel.Model)
@@ -45,40 +49,40 @@ router.post("/mock",async(req,res)=>{
 
 //增加 || 更新
 router.post('/mock/:id', async (req, res, next) => {
-   const { id, name ,Schema,uniqueKey} = req.body
-   const query = { [uniqueKey]:req.body[uniqueKey] } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
-   const payload = { ...req.body } //内容
-   const modelName = req.originalUrl.slice(10)
+   const {dataSource,apiName} = req.body
+   const uniqueObj = dataSource.find(el=>el.unique == true)
+   const query = { [uniqueObj.key]:uniqueObj.value } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   const payload = {} //内容
+   const Schema = {}
+   dataSource.forEach(el=>{
+      Schema[el.key] = el.type
+      payload[el.key] = el.value
+   })
    //动态添加schema的字段和数据类型
    mockSchema.add(Schema)
    //再生成模型
-   const mockModel = mongoose.model(modelName,mockSchema)
+   const mockModel = mongoose.model(apiName,mockSchema)
    //传入该模型生成控制器
    const mockController = new Controller(mockModel)
    const data = await mockController.insert(query, payload)
 
-
-   let dataSource = []
-   for(let i in Schema){
-      dataSource.push({
-         schemaKey:i,
-         schemaType:Schema[i],
-         schemaValue:req.body[i]
+   try{
+      await allMockController.insert({apiName},{
+         dataSource,
+         method:'POST',
+         apiName
       })
+   }catch(err){
+      console.log(err);
    }
-   dataSource = dataSource.map((el,index)=> Object.assign(el,{key:index+''}))
-   const all = await allMockController.insert({url:modelName},{
-      dataSource,
-      methods:'POST',
-      url:modelName
-   })
    res.json({data})
+
 })
 
 //删除
 router.delete('/mock', async (req, res, next) => {
-   const { url } = req.body
-   const data = await allMockController.remove({url})
+   const { apiName } = req.body
+   const data = await allMockController.remove({apiName})
    res.json(data)
 })
 
