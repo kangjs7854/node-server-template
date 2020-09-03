@@ -13,7 +13,7 @@ const {quicklyMockModel} = require("../model/index")
 const Controller = require('../controllers/index');
 
 const mockSchema = mongoose.Schema()
-
+let mockModel,mockController
 const allMockModel = new quicklyMockModel('AllMockApi',{
    method:String,
    apiName:String,
@@ -24,7 +24,15 @@ const allMockModel = new quicklyMockModel('AllMockApi',{
          unique:Boolean,
          type:{
             type:String
-         }
+         },
+         children:[{
+            key:String,
+            value:String,
+            type:{
+               type:String
+            },
+            isInner:Boolean
+         }]
       }
    ],
 })
@@ -32,8 +40,8 @@ const allMockModel = new quicklyMockModel('AllMockApi',{
 const allMockController = new Controller(allMockModel.Model)
 //查找
 router.get('/mock', async (req, res, next) => {
-   const { id } = req.query
-   const mock = await allMockController.find({ _id: id })
+   const { apiName } = req.query
+   const mock = await allMockController.find({ apiName })
    res.json(mock)
 })
 
@@ -50,23 +58,40 @@ router.post("/mock",async(req,res)=>{
 //增加 || 更新
 router.post('/mock/:id', async (req, res, next) => {
    const {dataSource,apiName} = req.body
-   const uniqueObj = dataSource.find(el=>el.unique == true)
-   const query = { [uniqueObj.key]:uniqueObj.value } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   let uniqueObj = {}
+   let query = {} //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
    const payload = {} //内容
    const Schema = {}
+   const innerSchema = {}
+   const innerPayload = {}
    dataSource.forEach(el=>{
+      if(el.unique){
+         uniqueObj = el
+         query = {[uniqueObj.key]:uniqueObj.value}
+      }
+      //处理对象的数据结构
+      if(el.children && el.children.length){
+         const innerDataSource =el.children
+         innerDataSource.forEach(innerEl=>{
+            innerSchema[innerEl.key] = innerEl.type
+            innerPayload[innerEl.key] = innerEl.value
+         })
+         Schema[el.key] = innerSchema
+         payload[el.key] = innerPayload
+         return
+      }
       Schema[el.key] = el.type
       payload[el.key] = el.value
    })
    //动态添加schema的字段和数据类型
    mockSchema.add(Schema)
    //再生成模型
-   const mockModel = mongoose.model('MockApi',mockSchema)
+   mockModel = mongoose.model(apiName,mockSchema)
    //传入该模型生成控制器
-   const mockController = new Controller(mockModel)
+   mockController = new Controller(mockModel)
    const data = await mockController.insert(query, payload)
 
-   try{
+   try{//将该接口数据添加到接口列表
       await allMockController.insert({apiName},{
          dataSource,
          method:'POST',
