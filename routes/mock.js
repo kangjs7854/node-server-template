@@ -19,6 +19,7 @@ const allMockModel = new quicklyMockModel('AllMockApi',{
    apiName:String,
    dataSource:[
       {
+         id:String,
          key:String,
          value:String,
          unique:Boolean,
@@ -26,6 +27,7 @@ const allMockModel = new quicklyMockModel('AllMockApi',{
             type:String
          },
          children:[{
+            id:String,
             key:String,
             value:String,
             type:{
@@ -58,8 +60,8 @@ router.post("/mock",async(req,res)=>{
 //增加 || 更新
 router.post('/mock/:id', async (req, res, next) => {
    const {dataSource,apiName} = req.body
-   let uniqueObj = {}
-   let query = {} //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件
+   let uniqueObj = {}//含有唯一标识的key的对象
+   let query = {} //匹配条件,根据什么字段进行插入或者更新
    const payload = {} //内容
    const Schema = {}
    const innerSchema = {}

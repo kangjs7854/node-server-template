@@ -8,7 +8,7 @@
     "url": "git+https://github.com/kangjs7854/node-server-template.git"
   },
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "node ./bin/www",
     "test": "jest",
     "dev":"nodemon .bin/www"
   },
