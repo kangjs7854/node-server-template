@@ -34,7 +34,8 @@ const allMockModel = new quicklyMockModel('AllMockApi',{
                type:String
             },
             isInner:Boolean
-         }]
+         }],
+         test:String
       }
    ],
 })
@@ -48,12 +49,12 @@ router.get('/mock', async (req, res, next) => {
 })
 
 
-router.post("/mock",async(req,res)=>{
+router.get("/mock:id",async(req,res)=>{
    const {url} = req.body
    if(!url) return 
    const query = {url}
    const payload = { ...req.body } //内容
-   const data = await allMockController.insert(query, payload)
+   const data = await mockController.insert(query, payload)
    res.json({data})
 })
 

@@ -29,37 +29,49 @@ router.post('/auth', async (req, res, next) => {
     const clientID = '50ab343567bd310005df'
     const clientSecret = 'deea41faa0a55396c16f7679e16e61c2229f2f6a'
     //根据临时code换取令牌
-    const tokenResponse = await axios({
-        method: 'post',
-        url: 'https://github.com/login/oauth/access_token?' +
-            `client_id=${clientID}&` +
-            `client_secret=${clientSecret}&` +
-            `code=${code}`,
-        headers: {
-            accept: 'application/json'
-        }
-    });
-    const accessToken = tokenResponse.data.access_token;
-    if(!accessToken){
-        return res.json(tokenResponse.data)
+    try{
+       const tokenResponse = await axios({
+           method: 'post',
+           url: 'https://github.com/login/oauth/access_token?' +
+               `client_id=${clientID}&` +
+               `client_secret=${clientSecret}&` +
+               `code=${code}`,
+           headers: {
+               accept: 'application/json'
+           }
+       });
+       const accessToken = tokenResponse.data.access_token;
+       if(!accessToken){
+           return res.json(tokenResponse.data)
+       }
+       //使用令牌请求gitHub的接口
+       const result = await axios({
+           method: 'get',
+           url: `https://api.github.com/user`,
+           headers: {
+               accept: 'application/json',
+               Authorization: `token ${accessToken}`
+           }
+       });
+       res.json(result.data)
+
+       //存储用户数据到数据库
+       const query = { id:result.data.id }
+       const payload = { ...result.data }
+       await authController.insert(query, payload)
+    }catch (err){
+       console.log(err)
+        // //使用令牌请求gitHub的接口
+        const result = await axios({
+            method: 'get',
+            url: `https://api.github.com/user`,
+            headers: {
+                accept: 'application/json',
+                Authorization: `token ${accessToken}`
+            }
+        });
+        res.json(result.data)
     }
-    //使用令牌请求gitHub的接口
-    const result = await axios({
-        method: 'get',
-        url: `https://api.github.com/user`,
-        headers: {
-            accept: 'application/json',
-            Authorization: `token ${accessToken}`
-        }
-    });
-    res.json(result.data)
-
-    //存储用户数据到数据库
-    const query = { id:result.data.id }
-    const payload = { ...result.data }
-    await authController.insert(query, payload)
-
-
 })
 
 //删除
