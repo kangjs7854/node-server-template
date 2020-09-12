@@ -60,13 +60,14 @@ router.get("/mock:id",async(req,res)=>{
 
 //增加 || 更新
 router.post('/mock/:id', async (req, res, next) => {
-   const {dataSource,apiName} = req.body
+   const {dataSource,apiName,newData,deleteId} = req.body
    let uniqueObj = {}//含有唯一标识的key的对象
    let query = {} //匹配条件,根据什么字段进行插入或者更新
    const payload = {} //内容
    const Schema = {}
    const innerSchema = {}
    const innerPayload = {}
+   let data
    dataSource.forEach(el=>{
       if(el.unique){
          uniqueObj = el
@@ -92,17 +93,30 @@ router.post('/mock/:id', async (req, res, next) => {
    mockModel = mongoose.model(apiName,mockSchema)
    //传入该模型生成控制器
    mockController = new Controller(mockModel)
-   const data = await mockController.insert(query, payload)
+   if(newData && newData._id){
+      data = await mockController.update({_id:newData._id},newData)
+   }else if(deleteId){
+      data = await mockController.remove({_id:deleteId})
+   }else{
+      data = await mockController.insert(query, payload)
 
-   try{//将该接口数据添加到接口列表
+   }
+
+   const allMockApiList = await allMockController.find({apiName})
+   if(!allMockApiList){
       await allMockController.insert({apiName},{
          dataSource,
          method:'POST',
          apiName
       })
-   }catch(err){
-      console.log(err);
    }
+
+
+   // try{//将该接口数据添加到接口列表
+   //
+   // }catch(err){
+   //    console.log(err);
+   // }
    res.json({data})
 
 })

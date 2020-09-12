@@ -28,6 +28,7 @@ router.post('/auth', async (req, res, next) => {
     if (!code) return
     const clientID = '50ab343567bd310005df'
     const clientSecret = 'deea41faa0a55396c16f7679e16e61c2229f2f6a'
+    let accessToken
     //根据临时code换取令牌
     try{
        const tokenResponse = await axios({
@@ -40,7 +41,7 @@ router.post('/auth', async (req, res, next) => {
                accept: 'application/json'
            }
        });
-       const accessToken = tokenResponse.data.access_token;
+       accessToken = tokenResponse.data.access_token;
        if(!accessToken){
            return res.json(tokenResponse.data)
        }
