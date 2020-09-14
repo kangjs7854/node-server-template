@@ -35,7 +35,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use(cors())
 
 //批量动态引入路由
@@ -48,7 +48,6 @@ allApi.forEach(el => {
 app.use("/",(req,res)=>{
   res.render("index")
 })
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

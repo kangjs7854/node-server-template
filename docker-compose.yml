@@ -5,7 +5,7 @@ services:
     image: mongo
     restart: always
   server:
-    image: server
+    image: mock_server
     build: .
     environment:
       NODE_ENV: production
