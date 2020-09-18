@@ -50,12 +50,12 @@ router.get('/mock', async (req, res, next) => {
 })
 
 
-router.get("/mock:id",async(req,res)=>{
-   const {url} = req.body
-   if(!url) return 
-   const query = {url}
-   const payload = { ...req.body } //内容
-   const data = await mockController.insert(query, payload)
+router.get("/mock/:id",async(req,res)=>{
+   const apiName = req.params.id
+   const mockApiRecord = await allMockController.find({apiName})
+   if(!mockApiRecord) return
+   const {mockController,query,payload} = handleDataSource(mockApiRecord.dataSource,apiName)
+   const data = await mockController.find({})
    res.json({data})
 })
 
@@ -96,15 +96,29 @@ router.post('/mock/:id', async (req, res, next) => {
 })
 
 //删除
-router.delete('/mock', async (req, res, next) => {
-   const { apiName } = req.body
-   const data = await allMockController.remove({apiName})
+router.delete('/mock/:id', async (req, res, next) => {
+   const {id} = req.body
+   const apiName = req.params.id
+   const mockApiRecord = await allMockController.find({apiName})
+   if(!mockApiRecord) return
+   const {mockController} = handleDataSource(mockApiRecord.dataSource,apiName)
+   const data = await mockController.remove({_id:id})
+   res.json(data)
+})
+
+router.delete('/mock',async (req,res,next)=>{
+   const {apiName} = req.body
+   const data  = await allMockController.remove({apiName})
    res.json(data)
 })
 
 //修改
 router.put('/mock', async (req, res, next) => {
    const { id } = req.body
+   const apiName = req.params.id
+   const mockApiRecord = await allMockController.find({apiName})
+   if(!mockApiRecord) return
+   const {mockController} = handleDataSource(mockApiRecord.dataSource,apiName)
    const data = await mockController.update({ _id: id }, { ...req.body })
    res.json(data)
 })
@@ -128,15 +142,15 @@ function handleDataSource(dataSource,apiName){
          uniqueObj = el
          query = {[uniqueObj.key]:uniqueObj.value}
       }
-      //处理对象的数据结构
+      //处理引用类型的数据结构
       if(el.children && el.children.length){
          const innerDataSource =el.children
          innerDataSource.forEach(innerEl=>{
             innerSchema[innerEl.key] = innerEl.type
             innerPayload[innerEl.key] = innerEl.value
          })
-         Schema[el.key] = innerSchema
-         payload[el.key] = innerPayload
+         Schema[el.key] = el.type == 'Array' ? [innerSchema] : innerSchema
+         payload[el.key] = el.type == 'Array' ? [innerPayload] : innerPayload
          return
       }
       Schema[el.key] = el.type
