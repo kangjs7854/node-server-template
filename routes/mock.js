@@ -7,6 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose')
+const expressJwt = require("express-jwt")
 const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
 const {quicklyMockModel} = require("../model/index")
@@ -14,6 +15,7 @@ const Controller = require('../controllers/index');
 
 const mockSchema = mongoose.Schema()
 let mockModel,mockController
+const secretKey = 'mock_platform_666'
 
 const allMockModel = new quicklyMockModel('AllMockApi',{
    method:String,
@@ -60,7 +62,7 @@ router.get("/mock/:id",async(req,res)=>{
 })
 
 //增加 || 更新
-router.post('/mock/:id', async (req, res, next) => {
+router.post('/mock/:id',expressJwt({secret: secretKey,algorithms: ['RS256']}), async (req, res, next) => {
    const {newData,deleteId,deletedKeyValue} = req.body
    const apiName = req.body.apiName || req.params.id
    let resData//响应结果
