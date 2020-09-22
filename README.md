@@ -48,74 +48,60 @@ node开发接口的项目模板，通过封装以及vscode自定义代码块的�
 ```
 
 
-- ## 生成代码模板
-1. 键盘F1打开顶部搜索栏，输入以下命令行
-```
-configure user snippets
+- ## 使用编译器生成代码模板
+
+这里使用的是webstorm，设置里添加 live template;```$apiName$```表示变量名称，生成代码片段后光标会自动聚焦变量名上，即可输入所需要定义的api名称。当然，使用vscode也可以实现类似的效果
 
 ```
-2. 点击选择后，输入并点击
-```
-javascript.json
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
-```
-3. 自定义的代码块模板
-```
-{
-	"Print to console": {
-		"prefix": "node",
-		"body": [
-			"const express = require('express');",
-			"const router = express.Router();",
-			"const mongoose = require('mongoose')",
-			"const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性",
-			"",
-			"const { quicklyMockModel } = require('../model/index') //引入的模型名称根据你的model文件定义的格式来",
-			"const Controller = require('../controllers/index');",
-			"//快速mock数据，生成数据模型",
-			"const ${TM_FILENAME_BASE} = new quicklyMockModel('${TM_FILENAME_BASE}',{",
-			"    name:String,",
-			"    age:Number",
-			"})",
-			"//传入该模型生成控制器",
-			"const ${TM_FILENAME_BASE}Controller = new Controller(${TM_FILENAME_BASE}.Model)",
-			"",
-			"//查找",
-			"router.get('/${TM_FILENAME_BASE}', async(req, res, next) => {",
-			"   const { id } = req.query",
-			"   const ${TM_FILENAME_BASE} = await ${TM_FILENAME_BASE}Controller.find({ _id: id })",
-			"   res.json(${TM_FILENAME_BASE})",
-			"})",
-			"",
-			"//增加 || 更新",
-			"router.post('/${TM_FILENAME_BASE}', async(req,res,next) => {",
-			"   const { id, name } = req.body",
-			"   const query = { name } //匹配条件,根据什么字段进行插入或者更新,这里使用nama字段为条件",
-			"   const payload = { ...req.body } //内容",
-			"",
-			"   const data = await ${TM_FILENAME_BASE}Controller.insert(query, payload)",
-			"   res.json(data)",
-			"})",
-			"",
-			"//删除",
-			"router.delete('/${TM_FILENAME_BASE}', async(req,res,next) => {",
-			"   const { id } = req.body",
-			"   const data = await ${TM_FILENAME_BASE}Controller.remove(id)",
-			"   res.json(data)",
-			"})",
-			"",
-			"//修改",
-			"router.put('/${TM_FILENAME_BASE}', async(req,res,next) => {",
-			"   const { id } = req.body",
-			"  const data = await ${TM_FILENAME_BASE}Controller.update({ _id: id }, { ...req.body })",
-			"   res.json(data)",
-			"})",
-			"",
-			"module.exports = router;"
-		],
-		"description": "Log output to console"
-	}
-}
+const $apiName$Schema = mongoose.Schema({
+    name: String,
+    age: Number
+})
+
+const  $apiName$Model = mongoose.model('$apiName$',  $apiName$Schema)
+
+
+//查找
+router.get('/$apiName$', async (req, res, next) => {
+    const {id} = req.query
+    let query = {}
+    id && (query = {_id:id})
+    const data = await $apiName$Model.find(query)
+    res.json(data)
+})
+
+//增加 || 更新
+router.post('/$apiName$', async (req, res, next) => {
+    const {name} = req.body
+    const query = {name} //检索条件
+    const payload = {...req.body} //填充内容
+    //如果文档中不存在该数据，插入，否则更新
+    await $apiName$Model.findOneAndUpdate(query, payload,  {upsert: true,new:true}).exec()
+    //返回所有的数据
+    const data  = await $apiName$Model.find().exec()
+    res.json(data)
+})
+
+//删除
+router.delete('/$apiName$', async (req, res, next) => {
+    const {id} = req.body
+    const data = await $apiName$Model.findOneAndRemove({_id:id}).exec()
+    res.json(data)
+})
+
+//修改
+router.put('/$apiName$', async (req, res, next) => {
+    const {id} = req.body
+    const data = await $apiName$Model.findOneAndUpdate({_id: id}, {...req.body},{new:true}).exec()
+    res.json(data)
+})
+
+module.exports = router;
 ```
 ## 启动服务 
 
