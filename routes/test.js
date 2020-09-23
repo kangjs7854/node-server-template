@@ -17,7 +17,7 @@ router.get('/test', async (req, res, next) => {
     let query = {}
     id && (query = {_id:id})
     const data = await testModel.find(query)
-    res.json(data)
+    res.json({data})
 })
 
 //增加 || 更新

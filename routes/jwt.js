@@ -7,12 +7,11 @@ const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
 const jwtToken = require('jsonwebtoken')//生成用户签名和验证
-const secretKey = 'mock_platform_666'
 
 function createToken(target) {
+    const secretKey = 'mock_platform_666'
     return jwtToken.sign(target, secretKey, {expiresIn: 60 * 60 * 24}) // 授权时效24小时
 }
-
 
 const jwtSchema = mongoose.Schema({
     userName: String,
@@ -21,7 +20,6 @@ const jwtSchema = mongoose.Schema({
 })
 
 const jwtModel = mongoose.model('jwt',  jwtSchema)
-
 
 //查找
 router.get('/jwt', async (req, res, next) => {
@@ -90,3 +88,4 @@ router.put('/jwt', async (req, res, next) => {
 })
 
 module.exports = router;
+

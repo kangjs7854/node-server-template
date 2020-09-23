@@ -3,6 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 const axios = require('axios')
+const jwtToken = require('jsonwebtoken')//生成用户签名和验证
+
+function createToken(target) {
+    const secretKey = 'mock_platform_666'
+    return jwtToken.sign(target, secretKey, {expiresIn: 60 * 60 * 24}) // 授权时效24小时
+}
 const authSchema = mongoose.Schema({
     id:Number,
     url:String,
@@ -55,7 +61,8 @@ router.post('/auth', async (req, res, next) => {
                 Authorization: `token ${accessToken}`
             }
         });
-        res.json(result.data)
+        const token = createToken({userName: result.data.name})
+        res.json(Object.assign(result.data,{token}))
 
         //存储用户数据到数据库
         const query = { id:result.data.id }
@@ -63,16 +70,17 @@ router.post('/auth', async (req, res, next) => {
         await authModel.findOneAndUpdate(query, payload,{upsert:true,new:true}).exec()
     }catch (err){
         console.log(err)
-        // //使用令牌请求gitHub的接口
-        const result = await axios({
-            method: 'get',
-            url: `https://api.github.com/user`,
-            headers: {
-                accept: 'application/json',
-                Authorization: `token ${accessToken}`
-            }
-        });
-        res.json(result.data)
+        // // //使用令牌请求gitHub的接口
+        //         // const result = await axios({
+        //         //     method: 'get',
+        //         //     url: `https://api.github.com/user`,
+        //         //     headers: {
+        //         //         accept: 'application/json',
+        //         //         Authorization: `token ${accessToken}`
+        //         //     }
+        //         // });
+        //         // const token = createToken({userName: result.data.name})
+        //         // res.json(Object.assign(result.data,{token}))
     }
 })
 
