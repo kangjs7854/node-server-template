@@ -33,6 +33,7 @@ node开发接口的项目模板，通过封装以及vscode自定义代码块的�
     |   |-- index.js
     |   |-- memberInfo.js
     |   |-- order.js
+    |   |-- mock.js        可视化配置数据接口
     |   |-- orderList.js
     |   |-- patient.js
     |   |-- test.js
