@@ -6,26 +6,15 @@ node开发接口的项目模板，通过封装以及vscode自定义代码块的�
 # 项目结构
 ```
 |-- server
-    |-- .gitignore 			git的忽略文件
-    |-- app.js 				入口文件
-    |-- package.json 			依赖
-    |-- README.md 			项目说明文件
-    |-- bin				配置
+    |-- app.js 				    入口文件
+    |-- package.json 		    依赖
+    |-- README.md 			    项目说明文件
+    |-- bin				        配置
     |   |-- www
-    |-- client
-    |   |-- index.html 
-    |-- controllers 			行为层,封装了增删改查的控制器的类
-    |   |-- index.js 
-    |-- model 				模型层，定义所需数据的结构和行为
+    |-- model 				    模型层，定义所需数据的结构和行为
     |   |-- index.js
-    |-- public 				公共资源文件
-    |   |-- images
-    |   |   |-- a1_bg_wu@2x.png
-    |   |-- javascripts
-    |   |   |-- WXBizDataCrypt.js 
-    |   |-- stylesheets
-    |       |-- style.css
-    |-- routes 				定义api接口
+    |-- public 				    公共资源文件
+    |-- routes 				    定义api接口
     |   |-- appointmentOrder.js
     |   |-- card.js
     |   |-- clinicGuide.js
@@ -33,13 +22,13 @@ node开发接口的项目模板，通过封装以及vscode自定义代码块的�
     |   |-- index.js
     |   |-- memberInfo.js
     |   |-- order.js
-    |   |-- mock.js        可视化配置数据接口
+    |   |-- mock.js             可视化配置数据接口
     |   |-- orderList.js
     |   |-- patient.js
     |   |-- test.js
     |   |-- userInfo.js
     |   |-- userPhone.js    
-    |-- views 				视图层
+    |-- views 				    视图层
         |-- error.jade
         |-- index.jade
         |-- layout.jade
