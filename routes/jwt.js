@@ -6,7 +6,7 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId; //联表时用于标志存储数据的唯一性
 
-const jwtToken = require('jsonwebtoken')//生成用户签名和验证
+const jwtToken = require('jsonwebtoken');//生成用户签名和验证
 
 function createToken(target) {
     const secretKey = 'mock_platform_666'
@@ -35,8 +35,7 @@ router.post('/jwt', async (req, res, next) => {
     const {userName, passWord} = req.body
     const query = {userName}
     const payload = {...req.body}
-
-    const user = await jwtModel.find(query).exec()
+    const user = await jwtModel.findOne(query).exec()
     if (!user) {//新用户
         const {userName} = await jwtModel.findOneAndUpdate(query, payload, {
             upsert: true,
