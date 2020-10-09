@@ -1,9 +1,6 @@
-/*
- * @Date: 2020-07-23 10:16:24
- * @LastEditors: kjs
- * @LastEditTime: 2020-08-24 18:42:40
- * @FilePath: \server\app.js
- */
+import "reflect-metadata";
+import { createExpressServer } from "routing-controllers";
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -12,10 +9,14 @@ var logger = require('morgan');
 const cors = require("cors")
 const mongoose = require("mongoose")
 const fs = require('fs')
-const ejs = require("ejs")
-var app = express();
+
+// creates express app, registers all controller routes and returns you express app instance
+const app = createExpressServer({
+  controllers: [__dirname + "/controller/*"], //批量引入controller
+});
 
 
+//数据库连接
 mongoose.set('useFindAndModify', false)
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/test', {
   useNewUrlParser: true,
@@ -27,11 +28,7 @@ db.once("open", () => {
   console.log('mongodb connect success~');
 })
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.engine('html', ejs.__express);
-app.set('view engine', 'html');
-
+//中间件
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,15 +37,12 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(cors())
 
 //批量动态引入路由
-const allApi = fs.readdirSync("./routes");
+const allApi = fs.readdirSync("./src/routes");
 allApi.forEach(el => {
   var el = require("./routes/" + el)
   app.use('/api', el)
 })
 
-app.use("/",(req,res)=>{
-  res.render("index")
-})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -63,7 +57,17 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  // res.render('error');
 });
+
+app.use("/",(req,res)=>{
+  res.send("hello")
+})
+
+
+// run express application on port 3000
+app.listen(5000,()=>{
+  console.log('server is running on http://localhost:5000');
+})
 
 module.exports = app;
