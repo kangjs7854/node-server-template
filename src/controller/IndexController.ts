@@ -5,6 +5,6 @@ import { Controller, Get } from "routing-controllers";
 export class IndexController{
     @Get("/")
     renderIndex() {
-       return "hello";
+       return "hello~";
     }
 }

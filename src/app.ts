@@ -12,6 +12,7 @@ const fs = require('fs')
 
 // creates express app, registers all controller routes and returns you express app instance
 const app = createExpressServer({
+  cors: true,
   controllers: [__dirname + "/controller/*"], //批量引入controller
 });
 
